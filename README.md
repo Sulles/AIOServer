@@ -8,7 +8,7 @@ Three main threads: Connection, Server, and Services
 Two options here: either TUI (Text User Interface) or Client
 
 ### Background
-All connections will operate over aiohttp websocket connections (which may or may not be TCP/TLS sockets)
+All connections will operate over asyncio TCP connections
 
 All threads will have their own asyncio event loop
 
