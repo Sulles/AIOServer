@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+/*
+ * AIOMessage: Wrapper for all messages communicated between AIOServer and AIOClients
+ */
+message AIOMessage {
+  // 1. encryption_type: encryption type applied to serialized message
+  EncryptionType encryption_type = 1;
+  // 2. message_name: string name of serialized message
+  string message_name = 2;
+  // 3. message: serialized, and potentially encrypted, message (can be multiple because of 200 byte GCM limit)
+  repeated message = 3;
+  // 4. tag: optional AES GCM tag for each encrypted message
+  repeated tag = 4;
+  // 5. error: optional error information
+  Error error = 5;
+}
+// Encryption enum definition
+enum EncryptionType {
+  PLAIN_TEXT = 0;
+  RSA = 1;
+  AES = 2;
+}
+}
