@@ -19,14 +19,16 @@ class AIOConnection:
         :param rx:
         :param tx:
         """
-        logger.info(f'Got new connection!')
+        logger.info(f'=== Got new connection! ===')
         self._uuid = uuid
         self._rx = rx
         self._tx = tx
 
     async def read(self) -> Event:
         data = await self._rx.read()
+        print(f'READ DATA! {data.decode("utf-8")}')
         return ConnectionRx(uuid=self._uuid.int, data=data)
 
-    async def write(self, data):
+    def write(self, data: bytes):
         self._tx.write(data)
+        print(f'Sent data: {data.decode("utf-8")}')

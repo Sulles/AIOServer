@@ -2,25 +2,27 @@
 All Event Objects
 """
 
-from dataclasses import dataclass
 
-
-class Event(dataclass):
-    name: str
+class Event:
+    def __init__(self, name: str):
+        self.name = name
 
 
 class TaskResult(Event):
-    super().name = 'TaskResult'
-    task_name: str
-    success: bool
+    def __init__(self, task_name: str, success: bool):
+        self.task_name = task_name
+        self.success = success
+        Event.__init__(self, 'TaskEvent')
 
 
 class ConnectionRx(Event):
-    super().name = 'ConnectionRx'
-    uuid: int
-    data: bytes
+    def __init__(self, uuid: int, data: bytes):
+        self.uuid = uuid
+        self.data = data
+        Event.__init__(self, 'ConnectionRx')
 
 
 class ServerEvent(Event):
-    super().name = 'ServerEvent'
-    event_type: str
+    def __init__(self, event_type: str):
+        self.event_type = event_type
+        Event.__init__(self, 'ServerEvent')
