@@ -1,8 +1,8 @@
 # AIOServer
-Asyncio Server and Client
+Trio Server and Client
 
 ## Server
-Three main threads: Connection, Server, and Services
+Combines: Connection, Server, and 3rd party Services handling all in one trio nursery
 
 ## Client
 Two options here: either TUI (Text User Interface) or Client
