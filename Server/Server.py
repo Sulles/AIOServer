@@ -2,13 +2,10 @@
 Server object
 """
 
-import asyncio
+import trio
 
-from asyncio import StreamReader, StreamWriter
-from asyncio.queues import Queue
 from CommonLib.AIOConnection import AIOConnection
-from CommonLib.Events import *
-from uuid import uuid1
+from uuid import uuid1, UUID
 
 
 HOST = '127.0.0.1'
@@ -16,88 +13,71 @@ PORT = 8888
 
 
 class Server:
-    def __init__(self, loop: asyncio.AbstractEventLoop, connection_event_queue: Queue = None):
-        """
-        Server member variables
-        """
-        # Save Server event loop
-        self._loop = loop
+    """ Define member variables """
+    tx_event_channel: trio.abc.SendChannel
+    rx_event_channel: trio.abc.ReceiveChannel
 
-        # Save all tasks
-        self._tasks: list[asyncio.Task] = list()
-
-        # Define all member variables
-        self._connections: dict[str: AIOConnection] = dict()
-        self._is_running = True
-        self._server_event_queue = Queue()
-
-        if connection_event_queue is not None:
-            self._add_to_connection_queue = connection_event_queue.put
-        else:
-            self._add_to_connection_queue = print
+    def __init__(self):
+        """ Server initializer """
+        self._is_alive = True
+        self._connections: dict[UUID.hex, AIOConnection] = dict()
 
     @property
-    def is_running(self) -> bool:
-        return self._is_running
+    def is_alive(self):
+        return self._is_alive
 
-    async def add_to_event_queue(self, event) -> None:
-        await self._server_event_queue.put(event)
+    async def handle_new_connection(self, connection_stream):
+        """ Handle new connection """
+        print('Server received new connection!')
 
-    async def register_new_connection(self, rx: StreamReader, tx: StreamWriter):
-        print(f'=== Entering "register_new_connection"! ===')
+        # Create unique uuid for new AIOConnection
         uuid = uuid1()
-        self._connections[uuid.hex] = AIOConnection(uuid, rx, tx)
-        # Add task to Server event loop
-        task = self._loop.create_task(
-            self._connections[uuid.hex].read(),
-            name='register_new_connection')
-        self._tasks.append(task)
-        print(f'self._tasks: {self._tasks}')
+        self._connections[uuid.hex] = \
+            AIOConnection(uuid, connection_stream, self.tx_event_channel.send)
 
-    def process_result(self, result: TaskResult):
-        raise NotImplementedError
+        # Add AIOConnection main runner to nursery
+        async with trio.open_nursery() as nursery:
+            nursery.start_soon(self._connections[uuid.hex].receiver)
+
+    async def event_processor(self):
+        """ Server event processor """
+        async for event in self.rx_event_channel:
+            print(f'Server got event! {event}')
 
     async def run(self):
-        """
-        Main Server run method
-        :return:
-        """
-        server = await asyncio.start_server(self.register_new_connection, HOST, PORT, loop=self._loop)
-        print(f'Started server on: {server.sockets[0].getsockname()}')
-        self._loop.create_task(
-            server.serve_forever(),
-            name='server_listener')
+        """ Main Server run method """
+        print('Starting Server...')
 
-        while self.is_running:
-            print('.')
-            finished_tasks = [task for task in self._tasks if task.done()]
-            if len(finished_tasks) != 0:
-                [print(f'Got finished task: {task}') for task in finished_tasks]
+        # Open nursery
+        async with trio.open_nursery() as nursery:
 
-            self._tasks = [task for task in self._tasks if not task.done()]
-            # [print(f'Waiting on task: {task}') for task in self._tasks]
-            # for future in asyncio.as_completed(self._tasks):
-            #     result = await future
-            #     print(f'Got future result?! {result}')
+            # Create server event sender/receiver channel
+            self.tx_event_channel, self.rx_event_channel = trio.open_memory_channel(0)
 
-            await asyncio.sleep(0.1)
+            # Start Server event processor
+            nursery.start_soon(self.event_processor)
+
+            # Create TCP listener(s)
+            tcp_listeners = await trio.open_tcp_listeners(port=PORT, host=HOST)
+            print(f'Server listening or connections on {HOST}:{PORT}')
+
+            # Add Server handler for new connections
+            await trio.serve_listeners(
+                handler=self.handle_new_connection,
+                listeners=tcp_listeners,
+                handler_nursery=nursery)
 
     def cleanup(self):
-        """
-        Server graceful cleanup and terminate
-        :return:
-        """
+        """ Server graceful cleanup and terminate """
         # TODO: this...
         pass
 
 
 if __name__ == '__main__':
-    server_loop = asyncio.new_event_loop()
-    my_server = Server(server_loop)
+    my_server = Server()
 
     try:
-        server_loop.set_debug(True)
-        server_loop.run_until_complete(my_server.run())
+        trio.run(my_server.run)
 
     except KeyboardInterrupt:
         print('\n--- Keyboard Interrupt Detected ---\n')

@@ -36,8 +36,8 @@ else:
     all_files = ''.join(all_files)
 # print(f'all_files: {all_files}')
 
-# Get parent directory to output python files
-# print(f'parent directory: {path.parent}')
+# Get client directory to output python files
+# print(f'client directory: {path.client}')
 
 # Build protoc command
 command = f'{protoc} --proto_path={path} --python_out={path.parent} {all_files}'

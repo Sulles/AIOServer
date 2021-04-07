@@ -2,33 +2,37 @@
 AIO Connection Object
 """
 
-import logging
+import trio
 
 from uuid import UUID
-from CommonLib.Events import Event, ConnectionRx
-from asyncio import StreamReader, StreamWriter
-
-
-logger = logging.getLogger(__name__)
+from CommonLib.Events import TextEvent
 
 
 class AIOConnection:
-    def __init__(self, uuid: UUID, rx: StreamReader, tx: StreamWriter):
+    def __init__(self, uuid: UUID, connection_stream: trio.SocketStream,
+                 server_event_handler: trio.abc.SendChannel.send):
         """
         :param uuid:
-        :param rx:
-        :param tx:
+        :param connection_stream:
+        :param server_event_handler:
         """
-        logger.info(f'=== Got new connection! ===')
+        print(f'=== Got new connection! ===')
+        self._is_alive = True
         self._uuid = uuid
-        self._rx = rx
-        self._tx = tx
+        self._connection_stream = connection_stream
+        self._server_event_handler = server_event_handler
 
-    async def read(self) -> Event:
-        data = await self._rx.read()
-        print(f'READ DATA! {data.decode("utf-8")}')
-        return ConnectionRx(uuid=self._uuid.int, data=data)
+    @property
+    def is_alive(self):
+        return self._is_alive
 
-    def write(self, data: bytes):
-        self._tx.write(data)
-        print(f'Sent data: {data.decode("utf-8")}')
+    async def receiver(self):
+        """ AIOConnection receiver """
+        async for data in self._connection_stream:
+            print(f'AIOConnection:{self._uuid.hex[:8]} got data: {data}')
+            await self._server_event_handler(
+                TextEvent(f'{self._uuid.hex} {data}'))
+
+    async def send(self, data: bytes):
+        """ AIOConnection sender """
+        await self._connection_stream.send_all(data)

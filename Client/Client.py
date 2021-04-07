@@ -1,27 +1,54 @@
-"""
-Client object
-"""
+import sys
 
-import asyncio
-
+import trio
 
 HOST = '127.0.0.1'
 PORT = 8888
 
 
-async def connect():
-    rx, tx = await asyncio.open_connection(HOST, PORT)
-    while True:
-        outbound_message = input('Send something to server: ')
-        tx.write(outbound_message.encode('utf-8'))
-        # await tx.drain()
-        inbound_message = await rx.read()
-        print(f'Got inbound message: {inbound_message.decode("utf-8")}')
+class Client:
+    def __init__(self):
+        pass
+
+    async def sender(self, client_stream):
+        print("sender: started!")
+        while True:
+            data = input('> ').encode('utf-8')
+            print(f"sender: sending {data!r}")
+            await client_stream.send_all(data)
+            await trio.sleep(0.01)
+
+    async def receiver(self, client_stream):
+        print("receiver: started!")
+        async for data in client_stream:
+            print(f"receiver: got data {data!r}")
+        print("receiver: connection closed")
+        sys.exit()
+
+    async def run(self):
+        print(f"client: connecting to {HOST}:{PORT}")
+        client_stream = await trio.open_tcp_stream(HOST, PORT)
+        async with client_stream:
+            async with trio.open_nursery() as nursery:
+                print("client: spawning sender...")
+                nursery.start_soon(self.sender, client_stream)
+
+                print("client: spawning receiver...")
+                nursery.start_soon(self.receiver, client_stream)
+
+    def cleanup(self):
+        """ Client graceful cleanup and terminate """
+        # TODO: this...
+        pass
 
 
 if __name__ == '__main__':
+    client = Client()
+
     try:
-        asyncio.run(connect())
+        trio.run(client.run)
 
     except KeyboardInterrupt:
-        print(f'--- KEYBOARD INTERRUPT ---')
+        print('\n--- Keyboard Interrupt Detected ---\n')
+
+    client.cleanup()
