@@ -133,3 +133,4 @@ dmypy.json
 
 # Protoc
 CommonLib/proto/bin/protoc
+CommonLib/proto/bin/protoc.exe
