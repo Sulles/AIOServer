@@ -6,10 +6,9 @@ Description: _pb2.py auto generator for all Proto files in this folder
 """
 
 import subprocess
-
-from pathlib import Path
 from os import listdir, name as os_name
 from os.path import isfile, join
+from pathlib import Path
 
 # initialize path at current working directory
 path = Path().cwd()
@@ -47,7 +46,8 @@ command = f'{protoc} --proto_path={path} --python_out={path.parent} {all_files}'
 output = subprocess.run(args=command, text=True, capture_output=True, cwd=path, shell=True)
 # print(f'command output:\n{output}')
 if output.stderr != '':
-    raise (RuntimeError, f'Failed to successfully execute shell command:\n'
-                         f'{command}\n'
-                         f'Received error:\n'
-                         f'{output.stderr}')
+    print(f'Failed to successfully execute shell command:\n'
+          f'{command}\n'
+          f'Received error:\n'
+          f'{output.stderr}')
+    raise RuntimeError

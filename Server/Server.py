@@ -43,6 +43,9 @@ class Server:
         """ Server event processor """
         async for event in self.rx_event_channel:
             print(f'Server got event! {event}')
+            # TODO: 1. Create ticket for event
+            # TODO: 2. Process event
+            # TODO: 3. Close ticket for event
 
     async def run(self):
         """ Main Server run method """

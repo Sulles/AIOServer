@@ -16,7 +16,6 @@ class AIOConnection:
         :param connection_stream:
         :param server_event_handler:
         """
-        print(f'=== Got new connection! ===')
         self._is_alive = True
         self._uuid = uuid
         self._connection_stream = connection_stream
@@ -28,10 +27,13 @@ class AIOConnection:
 
     async def receiver(self):
         """ AIOConnection receiver """
-        async for data in self._connection_stream:
-            print(f'AIOConnection:{self._uuid.hex[:8]} got data: {data}')
-            await self._server_event_handler(
-                TextEvent(f'{self._uuid.hex} {data}'))
+        try:
+            async for data in self._connection_stream:
+                print(f'AIOConnection:{self._uuid.hex[:8]} got data: {data}')
+                await self._server_event_handler(
+                    TextEvent(f'{self._uuid.hex} {data}'))
+        except trio.BrokenResourceError as e:
+            print(f'{e}')
 
     async def send(self, data: bytes):
         """ AIOConnection sender """
