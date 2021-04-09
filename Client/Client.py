@@ -99,6 +99,14 @@ class TUIEvent:
         return str(self.__dict__)
 
 
+def clear_screen():
+    # Clear terminal
+    if os.name == 'nt':  # if windows
+        os.system('cls')
+    else:  # if unix
+        os.system('clear')
+
+
 class TUI(Client):
     """
     Text User Interface (TUI) to AIOServer
@@ -116,12 +124,15 @@ class TUI(Client):
         """ TUI event processor """
         print('Starting tui event processor')
         async for tui_event in self.rx_tui_event:
-            print(f'TUI event processor got event!: {tui_event}')
+            # print(f'TUI event processor got event!: {tui_event}')
             if tui_event.event_type == TuiEventType.UserEvent:
                 if tui_event.data == '\r':
                     self.commit_user_input_to_history()
                 else:
-                    self._user_input += tui_event.data
+                    if tui_event.data == '\x08':
+                        self._user_input = self._user_input[:-1]
+                    else:
+                        self._user_input += tui_event.data
             elif tui_event.event_type == TuiEventType.ServerEvent:
                 self.add_to_history(tui_event.data)
 
@@ -132,7 +143,7 @@ class TUI(Client):
 
     def add_to_history(self, text: str):
         """ Add text to TUI history """
-        print(f'Adding {text} to history')
+        # print(f'Adding {text} to history')
         if len(self._history) >= TUI_HISTORY_LENGTH:
             self._history.pop(0)
         self._history.append(text)
@@ -141,9 +152,10 @@ class TUI(Client):
         """ Override Client.receiver """
         print("receiver: started!")
         async for data in client_stream:
-            print(f"receiver: got data {data!r}")
+            # print(f"receiver: got data {data!r}")
             await self.tx_tui_event.send(
                 TUIEvent(TuiEventType.ServerEvent, data=data))
+            await trio.sleep(0.01)
         print("receiver: connection closed")
         sys.exit()
 
@@ -175,56 +187,60 @@ class TUI(Client):
 
     async def getch(self):
         """ Get character that a user has put in """
+        await trio.sleep(0.2)   # don't be the first thing to start
         while True:
-            data = self._kbhit.getch()
-            if data in [_.decode('utf-8') for _ in [b'\x03', b'\x1a']]:
-                sys.exit()
-            await self.tx_tui_event.send(
-                TUIEvent(TuiEventType.UserEvent, data=data))
+            with trio.move_on_after(1):
+                data = self._kbhit.getch()
+                if data in [_.decode('utf-8') for _ in [b'\x03', b'\x1a']]:
+                    sys.exit()
+                await self.tx_tui_event.send(
+                    TUIEvent(TuiEventType.UserEvent, data=data))
+                await trio.sleep(0.01)
 
     async def tui_interface(self):
         """ Tui interface """
         # Store previous info so updates are only done on-change
         previous_last_history = self._history[-1]
-        history_has_changed = False
         previous_user_input = copy(self._user_input)
+        default_whitespace_length = 50
+
+        await trio.sleep(0.1)   # wait for everything to spawn and start
+
+        # Build default interface
+        clear_screen()
+        print('\nWelcome to AIOServer TUI!')
+        print('\n-----------------------------------------\n')
 
         while True:
-            # If history has changed
-            if self._history[-1] != previous_last_history:
+            # If history or user input has changed
+            if self._history[-1] != previous_last_history or \
+                    self._user_input != previous_user_input:
 
-                # Update to latest message
-                previous_last_history = self._history[-1]
-                history_has_changed = True
+                if self._history[-1] != previous_last_history:
+                    # Update to latest message
+                    previous_last_history = self._history[-1]
 
-                # Clear terminal
-                if os.name == 'nt':  # if windows
-                    os.system('cls')
-                else:  # if unix
-                    os.system('clear')
+                    # Clear terminal
+                    clear_screen()
 
-                # Re-print history
-                [print(_) for _ in self._history]
+                    # Re-print history
+                    [print(_) for _ in self._history]
 
-                # Add line
-                print('\n-----------------------------------------\n')
-
-            # If user input has changed
-            if self._user_input != previous_user_input or history_has_changed:
-
-                # Reset history change override
-                history_has_changed = False
+                    # Add line
+                    print('\n-----------------------------------------\n')
 
                 # Update to latest user input
                 previous_user_input = copy(self._user_input)
 
-                # Remove previous line
-                print("\033[A\033[A")
-
                 # Re-write user input
-                print(self._user_input)
+                if len(previous_user_input) > default_whitespace_length:
+                    default_whitespace_length = len(previous_user_input) + 10
+                elif len(previous_user_input) < 10:
+                    default_whitespace_length = 50
+                sys.stdout.write('\r' + ''.join([' ' for _ in range(default_whitespace_length)]) +
+                                 '\r> ' + self._user_input)
 
-            await trio.sleep(0.05)
+            await trio.sleep(0.003)
 
 
 if __name__ == '__main__':
