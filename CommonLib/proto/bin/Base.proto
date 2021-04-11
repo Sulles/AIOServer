@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+/*
+ * All Common Message structures
+ */

@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-/*
- * Basic Text Message
- */
-message TextMessage {
-  // 1. Text message...
-  string text_message = 1;
-}

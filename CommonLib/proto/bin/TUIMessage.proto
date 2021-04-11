@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+/*
+ * TUIMessage: All messages sent while the client TUI is being used
+ */
+message TUIMessage {
+  // 1. Text from TUI
+  string text = 1;
+}

@@ -4,7 +4,7 @@ Server object
 
 import trio
 
-from CommonLib.AIOConnection import AIOConnection
+from Server.AIOConnection import AIOConnection
 from uuid import uuid1, UUID
 
 

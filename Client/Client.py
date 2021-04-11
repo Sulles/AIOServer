@@ -1,3 +1,7 @@
+"""
+Client Objects
+"""
+
 import os
 import sys
 from copy import copy
@@ -7,7 +11,7 @@ import trio
 from google.protobuf.message import Message
 
 from CommonLib.proto.AIOMessage_pb2 import AIOMessage
-from CommonLib.proto.TextMessage_pb2 import TextMessage
+from CommonLib.proto.TUIMessage_pb2 import TUIMessage
 from .KBHit import KBHit
 
 HOST = '127.0.0.1'
@@ -22,8 +26,7 @@ class Client:
     tx_send_server_channel: trio.abc.SendChannel
     rx_send_server_channel: trio.abc.ReceiveChannel
 
-    def __init__(self, is_dummy: bool = False):
-        self._is_dummy = is_dummy
+    def __init__(self):
         self._is_alive = True
 
     @property
@@ -31,17 +34,11 @@ class Client:
         return self.is_alive
 
     async def sender(self, client_stream):
-        """ Sender """
+        """ Sender monitors rx_send_server_channel for AIOMessages to serialize and send to Server """
         print("sender: started!")
-        if not self._is_dummy:
-            async for data in self.rx_send_server_channel:
-                print(f"sender: sending {data!r}")
-                await client_stream.send_all(data)
-        else:
-            while True:
-                data = input('> ')
-                await client_stream.send_all(data.encode('utf-8'))
-                await trio.sleep(0.1)
+        async for aio_msg in self.rx_send_server_channel:
+            # print(f"sender: sending {aio_msg}")
+            await client_stream.send_all(aio_msg.SerializeToString())
 
     async def receiver(self, client_stream):
         """ Receiver """
@@ -65,17 +62,20 @@ class Client:
                 nursery.start_soon(self.receiver, client_stream)
 
     @staticmethod
-    def build_text_message(message: str) -> TextMessage:
-        txt_msg = TextMessage()
-        txt_msg.text_message = message
-        return txt_msg
+    def build_tui_message(message: str) -> TUIMessage:
+        tui_msg = TUIMessage()
+        tui_msg.text = message
+        print(f'Built TUI message: {tui_msg}')
+        return tui_msg
 
     def build_aio_message(self, base_message: Message) -> AIOMessage:
         aio_msg = AIOMessage()
         aio_msg.message_name = base_message.DESCRIPTOR.name
+        print(f'Built AIO message: {aio_msg}')
         return self.encrypt(aio_msg)
 
-    def encrypt(self, aio_msg: AIOMessage):
+    def encrypt(self, aio_msg: AIOMessage) -> AIOMessage:
+        """ Encrypt contents of AIOMessage if possible """
         # TODO: this...
         return aio_msg
 
@@ -126,8 +126,9 @@ class TUI(Client):
         async for tui_event in self.rx_tui_event:
             # print(f'TUI event processor got event!: {tui_event}')
             if tui_event.event_type == TuiEventType.UserEvent:
-                if tui_event.data == '\r':
-                    self.commit_user_input_to_history()
+                # Windows return is '\r', unix return is '\n'
+                if tui_event.data == ('\r' if os.name == 'nt' else '\n'):
+                    await self.commit_user_input()
                 else:
                     if tui_event.data == '\x08':
                         self._user_input = self._user_input[:-1]
@@ -136,10 +137,13 @@ class TUI(Client):
             elif tui_event.event_type == TuiEventType.ServerEvent:
                 self.add_to_history(tui_event.data)
 
-    def commit_user_input_to_history(self):
-        """ Commit user input to history """
+    async def commit_user_input(self):
+        """ Commit user input to history and send to Server """
         self.add_to_history(self._user_input)
         self._user_input = ''
+        await self.tx_send_server_channel.send(
+            self.build_aio_message(
+                self.build_tui_message(self._user_input)))
 
     def add_to_history(self, text: str):
         """ Add text to TUI history """
@@ -150,13 +154,13 @@ class TUI(Client):
 
     async def receiver(self, client_stream):
         """ Override Client.receiver """
-        print("receiver: started!")
+        print("TUI receiver: started!")
         async for data in client_stream:
-            # print(f"receiver: got data {data!r}")
+            print(f"TUI receiver: got data {data!r}")
             await self.tx_tui_event.send(
                 TUIEvent(TuiEventType.ServerEvent, data=data))
             await trio.sleep(0.01)
-        print("receiver: connection closed")
+        print("TUI receiver: connection closed")
         sys.exit()
 
     async def run(self):
@@ -254,14 +258,3 @@ if __name__ == '__main__':
 
     finally:
         tui.cleanup()
-
-    # client = Client(is_dummy=True)
-    #
-    # try:
-    #     trio.run(client.run)
-    #
-    # except KeyboardInterrupt:
-    #     print('\n--- Keyboard Interrupt Detected ---\n')
-    #
-    # finally:
-    #     client.cleanup()

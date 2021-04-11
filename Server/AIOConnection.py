@@ -31,6 +31,8 @@ class AIOConnection:
             async for data in self._connection_stream:
                 print(f'AIOConnection:{self._uuid.hex[:8]} got data: {data}')
                 await self._server_event_handler(
+                    # TODO: Transition away fron TextEvent, use generic event with message Name
+                    # TODO: Decrypt received AIOMessage, use message Name and message body in Event to Server
                     TextEvent(f'{self._uuid.hex} {data}'))
         except trio.BrokenResourceError as e:
             print(f'{e}')

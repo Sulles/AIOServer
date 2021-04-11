@@ -77,7 +77,9 @@ class KBHit:
             return data.decode('utf-8')
 
         else:
-            return sys.stdin.read(1)
+            data = sys.stdin.read(1)
+            # print(data.encode('utf-8'))
+            return data
 
     def getarrow(self):
         """
