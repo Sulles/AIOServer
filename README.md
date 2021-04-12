@@ -8,9 +8,7 @@ Combines: Connection, Server, and 3rd party Services handling all in one trio nu
 Two options here: either TUI (Text User Interface) or Client
 
 ### Background
-All connections will operate over asyncio TCP connections
-
-All threads will have their own asyncio event loop
+All connections will operate over trio tcp connections
 
 All services must be awaitable
 
@@ -24,4 +22,4 @@ Upon RSA key exchange, all communication will be transferred to AES encryption
 ## Communication
 All communication between client and server will be through AIOMessage Google protobuf messages
 
-All services must define their own google protobuf message
+All services must define their own google protobuf message and register upon object initialization
