@@ -23,8 +23,8 @@ class Client:
     """
     Client connection to AIOServer
     """
-    tx_send_server_channel: trio.abc.SendChannel
-    rx_send_server_channel: trio.abc.ReceiveChannel
+    tx_send_server_channel: trio.abc.SendChannel[AIOMessage]
+    rx_send_server_channel: trio.abc.ReceiveChannel[AIOMessage]
 
     def __init__(self):
         self._is_alive = True
@@ -34,7 +34,9 @@ class Client:
         return self.is_alive
 
     async def sender(self, client_stream):
-        """ Sender monitors rx_send_server_channel for AIOMessages to serialize and send to Server """
+        """
+        Sender monitors rx_send_server_channel for AIOMessages to serialize and send to Server
+        """
         print("sender: started!")
         async for aio_msg in self.rx_send_server_channel:
             # print(f"sender: sending {aio_msg}")
@@ -65,13 +67,14 @@ class Client:
     def build_tui_message(message: str) -> TUIMessage:
         tui_msg = TUIMessage()
         tui_msg.text = message
-        print(f'Built TUI message: {tui_msg}')
+        # print(f'Built TUI message: {tui_msg}')
         return tui_msg
 
     def build_aio_message(self, base_message: Message) -> AIOMessage:
         aio_msg = AIOMessage()
         aio_msg.message_name = base_message.DESCRIPTOR.name
-        print(f'Built AIO message: {aio_msg}')
+        aio_msg.message = base_message.SerializeToString()
+        # print(f'Built AIO message: {aio_msg}')
         return self.encrypt(aio_msg)
 
     def encrypt(self, aio_msg: AIOMessage) -> AIOMessage:
@@ -139,11 +142,11 @@ class TUI(Client):
 
     async def commit_user_input(self):
         """ Commit user input to history and send to Server """
-        self.add_to_history(self._user_input)
-        self._user_input = ''
         await self.tx_send_server_channel.send(
             self.build_aio_message(
                 self.build_tui_message(self._user_input)))
+        self.add_to_history(self._user_input)
+        self._user_input = ''
 
     def add_to_history(self, text: str):
         """ Add text to TUI history """

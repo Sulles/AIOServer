@@ -8,12 +8,15 @@ message AIOMessage {
   EncryptionType encryption_type = 1;
   // 2. message_name: string name of serialized message
   string message_name = 2;
-  // 3. message: serialized, and potentially encrypted, message (can be multiple because of 200 byte GCM limit)
-  repeated bytes message = 3;
-  // 4. tag: optional AES GCM tag for each encrypted message
-  repeated bytes tag = 4;
-  // 5. error: optional error information
-  Error error = 5;
+  // 3. message: serialized and unencrypted message
+  bytes message = 3;
+  // 4. encrypted_message: serialized, and potentially fragmented, encrypted message
+  // (can be multiple because of 200 byte GCM limit)
+  repeated bytes encrypted_message = 4;
+  // 5. tag: optional AES GCM tag for each encrypted message
+  repeated bytes tag = 5;
+  // 6. error: optional error information
+  Error error = 6;
 }
 // Encryption enum definition
 enum EncryptionType {
