@@ -51,3 +51,5 @@ if output.stderr != '':
           f'Received error:\n'
           f'{output.stderr}')
     raise RuntimeError
+else:
+    print('Successfully built all _pb2.py files!')

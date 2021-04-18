@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+import "Base.proto";
+
+/*
+ * AuthenticatorMessage: Messages used for automatic authentication between Client and Server
+ */
+message AuthenticatorMessage {
+  // 1. authentication_step: step that authentication is at
+  AuthenticationStep authentication_step = 1;
+  // 2. new_rsa_key: optional for passing new RSA keys
+  RSAKey new_rsa_key = 2;
+  // 3. new_aes_key: optional for passing new AES keys
+  AESKey new_aes_key = 3;
+}
+// AuthenticationStep enum definition
+enum AuthenticationStep {
+  NEW_SESSION = 0;
+  NEW_RSA = 1;
+  NEW_AES = 2;
+  CONFIRMATION = 3;
+}
+
+/*
+ * IPCAuthenticatorUpdate: Messages used between Server.Authenticator service and
+      Server.AIOConnection object to update AIOConnection object with current
+      encryption level/status
+ */
+message IPCAuthenticatorUpdate {
+  // 1. set_encryption_type (note: EncryptionType defined in Base.proto)
+  EncryptionType set_encryption_type = 1;
+  // 2. optional rsa_key information
+  RSAKey rsa_key = 2;
+  // 3. optional aes_key information
+  AESKey aes_key = 3;
+}

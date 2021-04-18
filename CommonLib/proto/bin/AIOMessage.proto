@@ -1,28 +1,26 @@
 syntax = "proto3";
 
+import "Base.proto";
+
 /*
  * AIOMessage: Wrapper for all messages communicated between AIOServer and AIOClients
  */
 message AIOMessage {
   // 1. encryption_type: encryption type applied to serialized message
   EncryptionType encryption_type = 1;
-  // 2. message_name: string name of serialized message
-  string message_name = 2;
-  // 3. message: serialized and unencrypted message
-  bytes message = 3;
-  // 4. encrypted_message: serialized, and potentially fragmented, encrypted message
+  // 2. encryption_date: date that encryption was established
+  float encryption_timestamp = 2;
+  // 3. message_name: string name of serialized message
+  string message_name = 3;
+  // 4. message: serialized and unencrypted message
+  bytes message = 4;
+  // 5. encrypted_message: serialized, and potentially fragmented, encrypted message
   // (can be multiple because of 200 byte GCM limit)
-  repeated bytes encrypted_message = 4;
-  // 5. tag: optional AES GCM tag for each encrypted message
-  repeated bytes tag = 5;
-  // 6. error: optional error information
-  Error error = 6;
-}
-// Encryption enum definition
-enum EncryptionType {
-  PLAIN_TEXT = 0;
-  RSA = 1;
-  AES = 2;
+  repeated bytes encrypted_message = 5;
+  // 6. tag: optional AES GCM tag for each encrypted message
+  repeated bytes tag = 6;
+  // 7. error: optional error information
+  Error error = 7;
 }
 
 /*
