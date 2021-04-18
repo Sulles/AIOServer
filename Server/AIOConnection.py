@@ -28,7 +28,7 @@ class AIOConnection:
 
     async def receiver(self):
         """
-        AIOConnection receiver
+        AIOConnection _receiver
         - Should only receive (potentially encrypted) AIOMessages
         """
         try:
@@ -61,5 +61,5 @@ class AIOConnection:
             response_callback=self.send)
 
     async def send(self, data: bytes):
-        """ AIOConnection sender """
+        """ AIOConnection _sender """
         await self._connection_stream.send_all(data)

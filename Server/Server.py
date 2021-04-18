@@ -100,7 +100,7 @@ class Server:
 
         # Open nursery
         async with trio.open_nursery() as nursery:
-            # Create server event sender/receiver channel
+            # Create server event _sender/_receiver channel
             self.tx_event_channel, self.rx_event_channel = trio.open_memory_channel(0)
 
             # Start Server event processor

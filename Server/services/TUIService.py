@@ -1,7 +1,6 @@
 """
 TUI Service - default Text User Interface endpoint
 """
-import trio.lowlevel
 
 from CommonLib.proto.TUIMessage_pb2 import TUIMessage
 
@@ -14,8 +13,8 @@ class TUIService:
         """
         register_service('TUIMessage', self._handle_tui_message)
 
-    @staticmethod  # TODO: Finish this...
-    async def _handle_tui_message(message: TUIMessage, *args, **kwargs):  # response_callback: trio.lowlevel.wait_writable):
+    @staticmethod
+    async def _handle_tui_message(message: bytes, *args, **kwargs):
         """ Main entry-way for all TUIMessages """
         tui_message = TUIMessage()
         tui_message.ParseFromString(message)

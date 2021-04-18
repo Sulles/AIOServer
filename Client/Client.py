@@ -12,6 +12,7 @@ from google.protobuf.message import Message
 
 from CommonLib.proto.AIOMessage_pb2 import AIOMessage
 from CommonLib.proto.TUIMessage_pb2 import TUIMessage
+from CommonLib.proto.ChatBotMessage_pb2 import ChatBotMessage
 from .KBHit import KBHit
 
 HOST = '127.0.0.1'
@@ -28,27 +29,28 @@ class Client:
 
     def __init__(self):
         self._is_alive = True
+        self.username = ''  # TODO: implement login with security
 
     @property
     def is_alive(self):
         return self.is_alive
 
-    async def sender(self, client_stream):
+    async def _sender(self, client_stream):
         """
         Sender monitors rx_send_server_channel for AIOMessages to serialize and send to Server
         """
-        print("sender: started!")
+        print("_sender: started!")
         async for aio_msg in self.rx_send_server_channel:
-            # print(f"sender: sending {aio_msg}")
+            # print(f"_sender: sending {aio_msg}")
             await client_stream.send_all(aio_msg.SerializeToString())
 
-    async def receiver(self, client_stream):
+    async def _receiver(self, client_stream):
         """ Receiver """
-        # TODO: Finalize this for use
-        print("receiver: started!")
+        # TODO: Finalize this for generic Client use
+        print("_receiver: started!")
         async for data in client_stream:
-            print(f"receiver: got data {data!r}")
-        print("receiver: connection closed")
+            print(f"_receiver: got data {data!r}")
+        print("_receiver: connection closed")
         sys.exit()
 
     async def run(self):
@@ -57,11 +59,11 @@ class Client:
         self.tx_send_server_channel, self.rx_send_server_channel = trio.open_memory_channel(0)
         async with client_stream:
             async with trio.open_nursery() as nursery:
-                print("client: spawning sender...")
-                nursery.start_soon(self.sender, client_stream)
+                print("client: spawning _sender...")
+                nursery.start_soon(self._sender, client_stream)
 
-                print("client: spawning receiver...")
-                nursery.start_soon(self.receiver, client_stream)
+                print("client: spawning _receiver...")
+                nursery.start_soon(self._receiver, client_stream)
 
     @staticmethod
     def build_tui_message(message: str) -> TUIMessage:
@@ -75,9 +77,20 @@ class Client:
         aio_msg.message_name = base_message.DESCRIPTOR.name
         aio_msg.message = base_message.SerializeToString()
         # print(f'Built AIO message: {aio_msg}')
-        return self.encrypt(aio_msg)
+        return self._encrypt(aio_msg)
 
-    def encrypt(self, aio_msg: AIOMessage) -> AIOMessage:
+    def parse_aio_message(self, data: bytes) -> AIOMessage:
+        """ Parse a received AIOMessage, _decrypt and return results """
+        aio_message = AIOMessage()
+        aio_message.ParseFromString(data)
+        return self._decrypt(aio_message)
+
+    def _decrypt(self, aio_msg: AIOMessage) -> AIOMessage:
+        """ Decrypt contents of AIOMessage if necessary """
+        # TODO: This...
+        return aio_msg
+
+    def _encrypt(self, aio_msg: AIOMessage) -> AIOMessage:
         """ Encrypt contents of AIOMessage if possible """
         # TODO: this...
         return aio_msg
@@ -86,6 +99,11 @@ class Client:
         """ Client graceful cleanup and terminate """
         # TODO: this...
         pass
+
+
+class TuiState(IntEnum):
+    TUI = 0
+    ChatBot = 1
 
 
 class TuiEventType(IntEnum):
@@ -99,7 +117,8 @@ class TUIEvent:
         self.data = data
 
     def __str__(self):
-        return str(self.__dict__)
+        return f'Event Type: {self.event_type}\n' \
+               f'Data: {self.data}'
 
 
 def clear_screen():
@@ -121,9 +140,38 @@ class TUI(Client):
         self._kbhit = KBHit()
         self._history: list = ['']
         self._user_input: str = ''
+        self._state = TuiState.TUI
+        self._commands = {'help': self._get_help,
+                          'set state tui': self._set_state_tui,
+                          'set state chatbot': self._set_state_chatbot}
         Client.__init__(self)
 
-    async def tui_event_processor(self):
+    def _get_help(self) -> str:
+        return f'Available TUI Commands: {list(self._commands.keys())}'
+
+    def _set_state_tui(self) -> None:
+        """ Set TUI object state to TUI """
+        self._state = TuiState.TUI
+
+    def _set_state_chatbot(self) -> None:
+        """ Set TUI object state to ChatBot """
+        self._state = TuiState.ChatBot
+
+    def _build_state_message(self, text: str) -> Message:
+        """ Build state specific message """
+        if self._state == TuiState.TUI:
+            return self.build_tui_message(text)
+        elif self._state == TuiState.ChatBot:
+            return self._build_chat_bot_message(text)
+
+    def _build_chat_bot_message(self, message: str) -> ChatBotMessage:
+        """ Build ChatBotMessage """
+        chat_bot_message = ChatBotMessage()
+        chat_bot_message.author = self.username
+        chat_bot_message.message = message
+        return chat_bot_message
+
+    async def _tui_event_processor(self) -> None:
         """ TUI event processor """
         print('Starting tui event processor')
         async for tui_event in self.rx_tui_event:
@@ -131,42 +179,51 @@ class TUI(Client):
             if tui_event.event_type == TuiEventType.UserEvent:
                 # Windows return is '\r', unix return is '\n'
                 if tui_event.data == ('\r' if os.name == 'nt' else '\n'):
-                    await self.commit_user_input()
+                    await self._commit_user_input()
                 else:
-                    if tui_event.data == '\x08':
+                    if tui_event.data == '\x08':    # backspace
                         self._user_input = self._user_input[:-1]
                     else:
                         self._user_input += tui_event.data
             elif tui_event.event_type == TuiEventType.ServerEvent:
-                self.add_to_history(tui_event.data)
+                self._add_to_history(f'TUI event processor got server event!: {tui_event}')
+                self._add_to_history(self._parse_server_event_by_state(tui_event.data))
 
-    async def commit_user_input(self):
+    def _parse_server_event_by_state(self, aio_message: AIOMessage) -> str:
+        return aio_message
+
+    async def _commit_user_input(self) -> None:
         """ Commit user input to history and send to Server """
-        await self.tx_send_server_channel.send(
-            self.build_aio_message(
-                self.build_tui_message(self._user_input)))
-        self.add_to_history(self._user_input)
+        if self._user_input in self._commands.keys():
+            self._history.append(self._commands[self._user_input]())
+        else:
+            await self.tx_send_server_channel.send(
+                self.build_aio_message(
+                    self._build_state_message(self._user_input)))
+            # Only add message to user history if not using the chat bot
+            if self._state != TuiState.ChatBot:
+                self._add_to_history(self._user_input)
         self._user_input = ''
 
-    def add_to_history(self, text: str):
+    def _add_to_history(self, text: str) -> None:
         """ Add text to TUI history """
         # print(f'Adding {text} to history')
         if len(self._history) >= TUI_HISTORY_LENGTH:
             self._history.pop(0)
         self._history.append(text)
 
-    async def receiver(self, client_stream):
-        """ Override Client.receiver """
-        print("TUI receiver: started!")
+    async def _receiver(self, client_stream) -> None:
+        """ Override Client._receiver """
+        print("TUI _receiver: started!")
         async for data in client_stream:
-            print(f"TUI receiver: got data {data!r}")
+            # print(f"TUI _receiver: got data {data!r}")
             await self.tx_tui_event.send(
-                TUIEvent(TuiEventType.ServerEvent, data=data))
+                TUIEvent(TuiEventType.ServerEvent, data=self.parse_aio_message(data)))
             await trio.sleep(0.01)
-        print("TUI receiver: connection closed")
+        print("TUI _receiver: connection closed")
         sys.exit()
 
-    async def run(self):
+    async def run(self) -> None:
         print('Starting TUI...')
 
         # Create event channels
@@ -177,22 +234,22 @@ class TUI(Client):
         client_stream = await trio.open_tcp_stream(HOST, PORT)
 
         async with trio.open_nursery() as nursery:
-            print("tui: spawning sender...")
-            nursery.start_soon(self.sender, client_stream)
+            print("tui: spawning _sender...")
+            nursery.start_soon(self._sender, client_stream)
 
-            print("tui: spawning receiver...")
-            nursery.start_soon(self.receiver, client_stream)
+            print("tui: spawning _receiver...")
+            nursery.start_soon(self._receiver, client_stream)
 
             print("tui: spawning event processor...")
-            nursery.start_soon(self.tui_event_processor)
+            nursery.start_soon(self._tui_event_processor)
 
-            print('tui: spawning getch...')
-            nursery.start_soon(self.getch)
+            print('tui: spawning _getch...')
+            nursery.start_soon(self._getch)
 
-            print('tui: spawning tui_interface...')
-            nursery.start_soon(self.tui_interface)
+            print('tui: spawning _tui_interface...')
+            nursery.start_soon(self._tui_interface)
 
-    async def getch(self):
+    async def _getch(self) -> None:
         """ Get character that a user has put in """
         await trio.sleep(0.2)   # don't be the first thing to start
         while True:
@@ -204,7 +261,7 @@ class TUI(Client):
                     TUIEvent(TuiEventType.UserEvent, data=data))
                 await trio.sleep(0.01)
 
-    async def tui_interface(self):
+    async def _tui_interface(self) -> None:
         """ Tui interface """
         # Store previous info so updates are only done on-change
         previous_last_history = self._history[-1]

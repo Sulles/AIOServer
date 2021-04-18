@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+/*
+ * ChatBotMessage: All messages send while the client is communicating to the ChatBotService
+ */
+message ChatBotMessage {
+  // 1. Author of message
+  string author = 1;
+  // 2. Message
+  string message = 2;
+  // 3. Timestamp (only populated by server)
+  float timestamp = 3;  // datetime.timestamp(datetime.now())
+}

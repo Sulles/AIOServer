@@ -88,7 +88,7 @@ class KBHit:
         1 : right
         2 : down
         3 : left
-        Should not be called in the same program as getch().
+        Should not be called in the same program as _getch().
         """
 
         if os.name == 'nt':
