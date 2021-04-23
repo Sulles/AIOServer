@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x13\x41uthenticator.proto\x1a\nBase.proto\"\x84\x01\n\x14\x41uthenticatorMessage\x12\x30\n\x13\x61uthentication_step\x18\x01 \x01(\x0e\x32\x13.AuthenticationStep\x12\x1c\n\x0bnew_rsa_key\x18\x02 \x01(\x0b\x32\x07.RSAKey\x12\x1c\n\x0bnew_aes_key\x18\x03 \x01(\x0b\x32\x07.AESKey\"z\n\x16IPCAuthenticatorUpdate\x12,\n\x13set_encryption_type\x18\x01 \x01(\x0e\x32\x0f.EncryptionType\x12\x18\n\x07rsa_key\x18\x02 \x01(\x0b\x32\x07.RSAKey\x12\x18\n\x07\x61\x65s_key\x18\x03 \x01(\x0b\x32\x07.AESKey*Q\n\x12\x41uthenticationStep\x12\x0f\n\x0bNEW_SESSION\x10\x00\x12\x0b\n\x07NEW_RSA\x10\x01\x12\x0b\n\x07NEW_AES\x10\x02\x12\x10\n\x0c\x43ONFIRMATION\x10\x03\x62\x06proto3'
+  serialized_pb=b'\n\x13\x41uthenticator.proto\x1a\nBase.proto\"\x8a\x01\n\x14\x41uthenticatorMessage\x12\x30\n\x13\x61uthentication_step\x18\x01 \x01(\x0e\x32\x13.AuthenticationStep\x12\"\n\x0bnew_rsa_key\x18\x02 \x01(\x0b\x32\r.PublicRSAKey\x12\x1c\n\x0bnew_aes_key\x18\x03 \x01(\x0b\x32\x07.AESKey\"\x80\x01\n\x16IPCAuthenticatorUpdate\x12,\n\x13set_encryption_type\x18\x01 \x01(\x0e\x32\x0f.EncryptionType\x12\x1e\n\x07rsa_key\x18\x02 \x01(\x0b\x32\r.PublicRSAKey\x12\x18\n\x07\x61\x65s_key\x18\x03 \x01(\x0b\x32\x07.AESKey*Q\n\x12\x41uthenticationStep\x12\x0f\n\x0bNEW_SESSION\x10\x00\x12\x0b\n\x07NEW_RSA\x10\x01\x12\x0b\n\x07NEW_AES\x10\x02\x12\x10\n\x0c\x43ONFIRMATION\x10\x03\x62\x06proto3'
   ,
   dependencies=[Base__pb2.DESCRIPTOR,])
 
@@ -55,8 +55,8 @@ _AUTHENTICATIONSTEP = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=294,
-  serialized_end=375,
+  serialized_start=307,
+  serialized_end=388,
 )
 _sym_db.RegisterEnumDescriptor(_AUTHENTICATIONSTEP)
 
@@ -110,7 +110,7 @@ _AUTHENTICATORMESSAGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=36,
-  serialized_end=168,
+  serialized_end=174,
 )
 
 
@@ -155,15 +155,15 @@ _IPCAUTHENTICATORUPDATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=170,
-  serialized_end=292,
+  serialized_start=177,
+  serialized_end=305,
 )
 
 _AUTHENTICATORMESSAGE.fields_by_name['authentication_step'].enum_type = _AUTHENTICATIONSTEP
-_AUTHENTICATORMESSAGE.fields_by_name['new_rsa_key'].message_type = Base__pb2._RSAKEY
+_AUTHENTICATORMESSAGE.fields_by_name['new_rsa_key'].message_type = Base__pb2._PUBLICRSAKEY
 _AUTHENTICATORMESSAGE.fields_by_name['new_aes_key'].message_type = Base__pb2._AESKEY
 _IPCAUTHENTICATORUPDATE.fields_by_name['set_encryption_type'].enum_type = Base__pb2._ENCRYPTIONTYPE
-_IPCAUTHENTICATORUPDATE.fields_by_name['rsa_key'].message_type = Base__pb2._RSAKEY
+_IPCAUTHENTICATORUPDATE.fields_by_name['rsa_key'].message_type = Base__pb2._PUBLICRSAKEY
 _IPCAUTHENTICATORUPDATE.fields_by_name['aes_key'].message_type = Base__pb2._AESKEY
 DESCRIPTOR.message_types_by_name['AuthenticatorMessage'] = _AUTHENTICATORMESSAGE
 DESCRIPTOR.message_types_by_name['IPCAuthenticatorUpdate'] = _IPCAUTHENTICATORUPDATE

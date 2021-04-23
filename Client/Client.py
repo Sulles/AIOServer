@@ -30,10 +30,22 @@ class Client:
     def __init__(self):
         self._is_alive = True
         self.username = ''  # TODO: implement login with security
+        self._service_map: dict[str, classmethod] = dict()
 
     @property
     def is_alive(self):
         return self.is_alive
+
+    def register_service(self, service_name: str, service_callback: classmethod):
+        """
+        Register a service in Client
+        :param service_name:
+        :param service_callback:
+        """
+        if service_name in self._service_map.keys():
+            raise (NameError, f'Conflicting service "{service_name}" already registered!')
+        else:
+            self._service_map[service_name] = service_callback
 
     async def _sender(self, client_stream):
         """
@@ -186,7 +198,8 @@ class TUI(Client):
                     else:
                         self._user_input += tui_event.data
             elif tui_event.event_type == TuiEventType.ServerEvent:
-                self._add_to_history(f'TUI event processor got server event!: {tui_event}')
+                self._add_to_history(f'TUI event processor got server event! '
+                                     f'Event data: {tui_event.data}')
                 self._add_to_history(self._parse_server_event_by_state(tui_event.data))
 
     def _parse_server_event_by_state(self, aio_message: AIOMessage) -> str:
@@ -196,7 +209,7 @@ class TUI(Client):
         """ Commit user input to history and send to Server """
         if self._user_input in self._commands.keys():
             self._history.append(self._commands[self._user_input]())
-        else:
+        elif len(self._user_input) > 0:
             await self.tx_send_server_channel.send(
                 self.build_aio_message(
                     self._build_state_message(self._user_input)))

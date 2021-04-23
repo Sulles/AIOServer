@@ -1,5 +1,5 @@
 """
-Chat Bot
+Server Chat Bot Service
 """
 
 from datetime import datetime
@@ -30,9 +30,10 @@ class ChatBotService:
 
     async def _broadcast_latest_message(self, message: ChatBotMessage):
         """ Try to send message to all callbacks """
+        print(f'ChatBotService broadcasting message: {message}')
         for callback in self._callbacks:
             try:
-                await callback(message.SerializeToString())
+                await callback(message)
             except Exception as e:
                 print(f'ChatBotService failed to send message due to error: {e}')
                 self._callbacks.remove(callback)
@@ -41,7 +42,7 @@ class ChatBotService:
         """ Try to send entire history to new connection """
         for message in self._history:
             try:
-                await callback(message.SerializeToString())
+                await callback(message)
             except Exception as e:
                 print(f'ChatBotService failed to send ChatBot history due to error: {e}')
         self._callbacks.append(callback)
@@ -51,7 +52,7 @@ class ChatBotService:
         """ Callback for every client message """
         chat_bot_message = ChatBotMessage()
         chat_bot_message.ParseFromString(message)
-        chat_bot_message.timestamp = datetime.timestamp(datetime.now())
+        setattr(chat_bot_message, 'timestamp', datetime.timestamp(datetime.now()))
         self._add_to_history(chat_bot_message)
         if response_callback not in self._callbacks:
             await self._save_new_callback(response_callback)

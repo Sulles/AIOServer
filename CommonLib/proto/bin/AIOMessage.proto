@@ -22,31 +22,3 @@ message AIOMessage {
   // 7. error: optional error information
   Error error = 7;
 }
-
-/*
- * ERROR MESSAGE
- */
-message Error {
-  // 1. Error code enums
-  ErrorCode error_code = 1;
-  // 2. Error details
-  string error_details = 2;
-}
-// Error code enum definitions
-enum ErrorCode {
-  UNKNOWN_ERROR = 0;
-  CLI_ERROR = 1;
-  RSA_ERROR = 2;
-  AES_ERROR = 3;
-  KEY_EXCHANGE_ERROR = 4;
-  DECRYPTION_ERROR = 5;
-  ENCRYPTION_ERR0R = 6;
-  TIMEOUT_ERROR = 7;
-  INVALID_REQUEST_ERROR = 8;
-  INVALID_RESPONSE_ERROR = 9;
-  SECURITY_ERROR = 10;
-  SERVER_ERROR = 11;
-  SERVICE_ERROR = 12;
-  PARSING_ERROR = 13;
-  PASSWORD_CHANGE_ERROR = 14;
-}

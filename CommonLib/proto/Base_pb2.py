@@ -20,9 +20,100 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\nBase.proto\"1\n\x06RSAKey\x12\t\n\x01n\x18\x01 \x01(\x0c\x12\t\n\x01\x65\x18\x02 \x01(\x0c\x12\x11\n\ttimestamp\x18\x03 \x01(\x02\"7\n\x06\x41\x45SKey\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05nonce\x18\x02 \x01(\x0c\x12\x11\n\ttimestamp\x18\x03 \x01(\x02*2\n\x0e\x45ncryptionType\x12\x0e\n\nPLAIN_TEXT\x10\x00\x12\x07\n\x03RSA\x10\x01\x12\x07\n\x03\x41\x45S\x10\x02\x62\x06proto3'
+  serialized_pb=b'\n\nBase.proto\">\n\x05\x45rror\x12\x1e\n\nerror_code\x18\x01 \x01(\x0e\x32\n.ErrorCode\x12\x15\n\rerror_details\x18\x02 \x01(\t\"7\n\x0cPublicRSAKey\x12\t\n\x01n\x18\x01 \x01(\x0c\x12\t\n\x01\x65\x18\x02 \x01(\x0c\x12\x11\n\ttimestamp\x18\x03 \x01(\x02\"7\n\x06\x41\x45SKey\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05nonce\x18\x02 \x01(\x0c\x12\x11\n\ttimestamp\x18\x03 \x01(\x02*\xc0\x02\n\tErrorCode\x12\x11\n\rUNKNOWN_ERROR\x10\x00\x12\r\n\tCLI_ERROR\x10\x01\x12\r\n\tRSA_ERROR\x10\x02\x12\r\n\tAES_ERROR\x10\x03\x12\x16\n\x12KEY_EXCHANGE_ERROR\x10\x04\x12\x14\n\x10\x44\x45\x43RYPTION_ERROR\x10\x05\x12\x14\n\x10\x45NCRYPTION_ERR0R\x10\x06\x12\x11\n\rTIMEOUT_ERROR\x10\x07\x12\x19\n\x15INVALID_REQUEST_ERROR\x10\x08\x12\x1a\n\x16INVALID_RESPONSE_ERROR\x10\t\x12\x12\n\x0eSECURITY_ERROR\x10\n\x12\x10\n\x0cSERVER_ERROR\x10\x0b\x12\x11\n\rSERVICE_ERROR\x10\x0c\x12\x11\n\rPARSING_ERROR\x10\r\x12\x19\n\x15PASSWORD_CHANGE_ERROR\x10\x0e*2\n\x0e\x45ncryptionType\x12\x0e\n\nPLAIN_TEXT\x10\x00\x12\x07\n\x03RSA\x10\x01\x12\x07\n\x03\x41\x45S\x10\x02\x62\x06proto3'
 )
 
+_ERRORCODE = _descriptor.EnumDescriptor(
+  name='ErrorCode',
+  full_name='ErrorCode',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='UNKNOWN_ERROR', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='CLI_ERROR', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='RSA_ERROR', index=2, number=2,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='AES_ERROR', index=3, number=3,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='KEY_EXCHANGE_ERROR', index=4, number=4,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='DECRYPTION_ERROR', index=5, number=5,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ENCRYPTION_ERR0R', index=6, number=6,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='TIMEOUT_ERROR', index=7, number=7,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='INVALID_REQUEST_ERROR', index=8, number=8,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='INVALID_RESPONSE_ERROR', index=9, number=9,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='SECURITY_ERROR', index=10, number=10,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='SERVER_ERROR', index=11, number=11,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='SERVICE_ERROR', index=12, number=12,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='PARSING_ERROR', index=13, number=13,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='PASSWORD_CHANGE_ERROR', index=14, number=14,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=193,
+  serialized_end=513,
+)
+_sym_db.RegisterEnumDescriptor(_ERRORCODE)
+
+ErrorCode = enum_type_wrapper.EnumTypeWrapper(_ERRORCODE)
 _ENCRYPTIONTYPE = _descriptor.EnumDescriptor(
   name='EncryptionType',
   full_name='EncryptionType',
@@ -48,42 +139,96 @@ _ENCRYPTIONTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=122,
-  serialized_end=172,
+  serialized_start=515,
+  serialized_end=565,
 )
 _sym_db.RegisterEnumDescriptor(_ENCRYPTIONTYPE)
 
 EncryptionType = enum_type_wrapper.EnumTypeWrapper(_ENCRYPTIONTYPE)
+UNKNOWN_ERROR = 0
+CLI_ERROR = 1
+RSA_ERROR = 2
+AES_ERROR = 3
+KEY_EXCHANGE_ERROR = 4
+DECRYPTION_ERROR = 5
+ENCRYPTION_ERR0R = 6
+TIMEOUT_ERROR = 7
+INVALID_REQUEST_ERROR = 8
+INVALID_RESPONSE_ERROR = 9
+SECURITY_ERROR = 10
+SERVER_ERROR = 11
+SERVICE_ERROR = 12
+PARSING_ERROR = 13
+PASSWORD_CHANGE_ERROR = 14
 PLAIN_TEXT = 0
 RSA = 1
 AES = 2
 
 
 
-_RSAKEY = _descriptor.Descriptor(
-  name='RSAKey',
-  full_name='RSAKey',
+_ERROR = _descriptor.Descriptor(
+  name='Error',
+  full_name='Error',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='n', full_name='RSAKey.n', index=0,
+      name='error_code', full_name='Error.error_code', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='error_details', full_name='Error.error_details', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=14,
+  serialized_end=76,
+)
+
+
+_PUBLICRSAKEY = _descriptor.Descriptor(
+  name='PublicRSAKey',
+  full_name='PublicRSAKey',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='n', full_name='PublicRSAKey.n', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='e', full_name='RSAKey.e', index=1,
+      name='e', full_name='PublicRSAKey.e', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='timestamp', full_name='RSAKey.timestamp', index=2,
+      name='timestamp', full_name='PublicRSAKey.timestamp', index=2,
       number=3, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
@@ -101,8 +246,8 @@ _RSAKEY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=14,
-  serialized_end=63,
+  serialized_start=78,
+  serialized_end=133,
 )
 
 
@@ -147,21 +292,31 @@ _AESKEY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=65,
-  serialized_end=120,
+  serialized_start=135,
+  serialized_end=190,
 )
 
-DESCRIPTOR.message_types_by_name['RSAKey'] = _RSAKEY
+_ERROR.fields_by_name['error_code'].enum_type = _ERRORCODE
+DESCRIPTOR.message_types_by_name['Error'] = _ERROR
+DESCRIPTOR.message_types_by_name['PublicRSAKey'] = _PUBLICRSAKEY
 DESCRIPTOR.message_types_by_name['AESKey'] = _AESKEY
+DESCRIPTOR.enum_types_by_name['ErrorCode'] = _ERRORCODE
 DESCRIPTOR.enum_types_by_name['EncryptionType'] = _ENCRYPTIONTYPE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-RSAKey = _reflection.GeneratedProtocolMessageType('RSAKey', (_message.Message,), {
-  'DESCRIPTOR' : _RSAKEY,
+Error = _reflection.GeneratedProtocolMessageType('Error', (_message.Message,), {
+  'DESCRIPTOR' : _ERROR,
   '__module__' : 'Base_pb2'
-  # @@protoc_insertion_point(class_scope:RSAKey)
+  # @@protoc_insertion_point(class_scope:Error)
   })
-_sym_db.RegisterMessage(RSAKey)
+_sym_db.RegisterMessage(Error)
+
+PublicRSAKey = _reflection.GeneratedProtocolMessageType('PublicRSAKey', (_message.Message,), {
+  'DESCRIPTOR' : _PUBLICRSAKEY,
+  '__module__' : 'Base_pb2'
+  # @@protoc_insertion_point(class_scope:PublicRSAKey)
+  })
+_sym_db.RegisterMessage(PublicRSAKey)
 
 AESKey = _reflection.GeneratedProtocolMessageType('AESKey', (_message.Message,), {
   'DESCRIPTOR' : _AESKEY,

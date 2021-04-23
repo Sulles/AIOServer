@@ -9,7 +9,7 @@ message AuthenticatorMessage {
   // 1. authentication_step: step that authentication is at
   AuthenticationStep authentication_step = 1;
   // 2. new_rsa_key: optional for passing new RSA keys
-  RSAKey new_rsa_key = 2;
+  PublicRSAKey new_rsa_key = 2;
   // 3. new_aes_key: optional for passing new AES keys
   AESKey new_aes_key = 3;
 }
@@ -30,7 +30,7 @@ message IPCAuthenticatorUpdate {
   // 1. set_encryption_type (note: EncryptionType defined in Base.proto)
   EncryptionType set_encryption_type = 1;
   // 2. optional rsa_key information
-  RSAKey rsa_key = 2;
+  PublicRSAKey rsa_key = 2;
   // 3. optional aes_key information
   AESKey aes_key = 3;
 }

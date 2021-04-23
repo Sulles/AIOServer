@@ -6,7 +6,8 @@ import trio
 
 from uuid import UUID
 from .util import ServiceRequestEvent
-from CommonLib.proto.Base_pb2 import EncryptionType, RSAKey, AESKey
+from google.protobuf.message import Message
+from CommonLib.proto.Base_pb2 import EncryptionType, PublicRSAKey, AESKey
 from CommonLib.proto.AIOMessage_pb2 import AIOMessage
 from CommonLib.proto.Authenticator_pb2 import IPCAuthenticatorUpdate
 
@@ -28,7 +29,7 @@ class AIOConnection:
         self._server_event_handler = server_event_handler
 
         # Internal functionality
-        self._encryption_type: str = 'PLAIN_TEXT'
+        self._active_encryption_method: str = 'PLAIN_TEXT'
         self.__aes_key = None   # TODO: Create AES key object
         self.__rsa_key = None   # TODO: Create RSA key object
         self._internal_callback_handler: dict[str: classmethod] = dict(
@@ -36,7 +37,7 @@ class AIOConnection:
         )
 
     def __str__(self):
-        return f'AIOConnection:{self._uuid} EncryptionType:{self._encryption_type}'
+        return f'[AIOConnection:{self._uuid}; EncryptionType:{self._active_encryption_method}]'
 
     @property
     def is_alive(self):
@@ -54,14 +55,21 @@ class AIOConnection:
                 print(f'AIOConnection:{self._uuid.hex[:8]} got data: {aio_message}')
                 await self._server_event_handler(
                     self._aio_msg_to_service_request(
-                        self.decrypt(aio_message)))
+                        self._decrypt(aio_message)))
 
         except trio.BrokenResourceError as e:
             print(f'{e}')
 
-    def decrypt(self, aio_message: AIOMessage) -> AIOMessage:
+    def _decrypt(self, aio_message: AIOMessage) -> AIOMessage:
         """
         TODO: Convert encrypted_message to message
+        :param aio_message:
+        """
+        return aio_message
+
+    def _encrypt(self, aio_message: AIOMessage) -> AIOMessage:
+        """
+        TODO: Convert plaintext AIOMessage to encrypted message
         :param aio_message:
         """
         return aio_message
@@ -89,14 +97,14 @@ class AIOConnection:
         ipc_auth_message = IPCAuthenticatorUpdate()
         ipc_auth_message.ParseFromString(message)
         print(f'Got IPCAuthenticatorUpdate: {ipc_auth_message}')
-        self._encryption_type = EncryptionType.Name(ipc_auth_message.set_encryption_type)
-        if self._encryption_type == 'RSA' and ipc_auth_message.rsa_key:
+        self._active_encryption_method = EncryptionType.Name(ipc_auth_message.set_encryption_type)
+        if self._active_encryption_method == 'RSA' and ipc_auth_message.rsa_key:
             self.__update_rsa_key(ipc_auth_message.rsa_key)
-        elif self._encryption_type == 'AES' and ipc_auth_message.aes_key:
+        elif self._active_encryption_method == 'AES' and ipc_auth_message.aes_key:
             self.__update_aes_key(ipc_auth_message.aes_key)
         print(self)
 
-    def __update_rsa_key(self, rsa_key: RSAKey):
+    def __update_rsa_key(self, rsa_key: PublicRSAKey):
         """ Update internal RSA key with new key """
         raise NotImplemented
 
@@ -104,6 +112,12 @@ class AIOConnection:
         """ Update internal AES key with new key """
         raise NotImplemented
 
-    async def send(self, data: bytes):
+    async def send(self, message: Message):
         """ AIOConnection _sender """
-        await self._connection_stream.send_all(data)
+        aio_wrapper = AIOMessage()
+        aio_wrapper.message_name = message.DESCRIPTOR.name
+        aio_wrapper.message = message.SerializeToString()
+        aio_wrapper = self._encrypt(aio_wrapper)
+        print(f'{self} sending message: {aio_wrapper}')
+        await self._connection_stream.send_all(
+            aio_wrapper.SerializeToString())
