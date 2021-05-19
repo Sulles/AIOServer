@@ -6,6 +6,9 @@ import os
 import sys
 from copy import copy
 from enum import IntEnum
+from queue import Queue, Empty
+from threading import Thread
+from time import sleep
 
 import trio
 from google.protobuf.message import Message
@@ -133,6 +136,18 @@ class TUIEvent:
                f'Data: {self.data}'
 
 
+def enqueue_getch(input_queue: Queue, kbhit: KBHit):
+    """ Enqueue getch data from KBHit object """
+    while True:
+        try:
+            new_input = kbhit.getch()
+            if new_input is not None:
+                input_queue.put(new_input)
+        except UnicodeDecodeError:
+            break
+    print('CRITICAL ERROR: Getch no longer functional!')
+
+
 def clear_screen():
     # Clear terminal
     if os.name == 'nt':  # if windows
@@ -150,6 +165,8 @@ class TUI(Client):
 
     def __init__(self):
         self._kbhit = KBHit()
+        self._getch_queue = Queue()
+        self._getch_thread = Thread(target=enqueue_getch, args=(self._getch_queue, self._kbhit,))
         self._history: list = ['']
         self._user_input: str = ''
         self._state = TuiState.TUI
@@ -203,6 +220,11 @@ class TUI(Client):
                 self._add_to_history(self._parse_server_event_by_state(tui_event.data))
 
     def _parse_server_event_by_state(self, aio_message: AIOMessage) -> str:
+        """
+        TODO: This...
+        :param aio_message:
+        :return:
+        """
         return aio_message
 
     async def _commit_user_input(self) -> None:
@@ -256,6 +278,7 @@ class TUI(Client):
             nursery.start_soon(self._tui_event_processor)
 
             print('tui: spawning _getch...')
+            self._getch_thread.start()
             nursery.start_soon(self._getch)
 
             print('tui: spawning _tui_interface...')
@@ -265,15 +288,15 @@ class TUI(Client):
         """ Get character that a user has put in """
         await trio.sleep(0.2)   # don't be the first thing to start
         while True:
-            with trio.move_on_after(0.1):
-                # Put self at end of event loop
-                for _ in range(5):
-                    await trio.sleep(0.001)
-                data = self._kbhit.getch()
+            try:
+                data = self._getch_queue.get(timeout=0.01)
                 if data in [_.decode('utf-8') for _ in [b'\x03', b'\x1a']]:
                     sys.exit()
                 await self.tx_tui_event.send(
                     TUIEvent(TuiEventType.UserEvent, data=data))
+                await trio.sleep(0)     # Checkpoint for other trio events
+            except Empty:
+                await trio.sleep(0.01)
 
     async def _tui_interface(self) -> None:
         """ Tui interface """
@@ -319,6 +342,14 @@ class TUI(Client):
                                  '\r> ' + self._user_input)
 
             await trio.sleep(0.001)
+
+    def cleanup(self):
+        """ Add some stuff to base cleanup """
+        print('Press "Delete" to exit...')
+        self._getch_thread.join()
+
+        # Call base client cleanup
+        Client.cleanup(self)
 
 
 if __name__ == '__main__':
