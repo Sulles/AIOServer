@@ -3,6 +3,7 @@ TUI Service - default Text User Interface endpoint
 """
 
 from CommonLib.proto.TUIMessage_pb2 import TUIMessage
+from Server.util import ServiceRequestEvent
 
 
 class TUIService:
@@ -14,8 +15,8 @@ class TUIService:
         register_service('TUIMessage', self._handle_tui_message)
 
     @staticmethod
-    async def _handle_tui_message(message: bytes, *args, **kwargs):
+    async def _handle_tui_message(event: ServiceRequestEvent):
         """ Main entry-way for all TUIMessages """
         tui_message = TUIMessage()
-        tui_message.ParseFromString(message)
+        tui_message.ParseFromString(event.message)
         print(f'TUIService received TUIMessage: {tui_message}')

@@ -7,21 +7,21 @@ from google.protobuf.message import Message
 
 
 class ServiceRequestEvent:
-    def __init__(self, service_name: str, service_message: Message,
-                 response_callback: trio.lowlevel.wait_writable,
-                 originator_callback: trio.lowlevel.wait_writable):
+    def __init__(self, requester_uuid: int, service_name: str, message: Message,
+                 response_callback: trio.lowlevel.wait_writable):
         """
         Service Request Events are events AIOConnections send to ServerEventProcessor
+        :param requester_uuid: Int of originator
         :param service_name: Name of ServiceMessage
-        :param service_message: ServiceMessage used to communicate to specific service
+        :param message: ServiceMessage used to communicate to specific service
         :param response_callback: Awaitable callback for sending a response
-        :param originator_callback: Awaitable callback for originator of this service request
         """
+        self.requester_uuid = requester_uuid
         self.service_name = service_name
-        self.service_message = service_message
+        self.message = message
         self.response_callback = response_callback
-        self.originator_callback = originator_callback
 
     def __str__(self):
-        return f'Service Name: {self.service_name}\n' \
-               f'Service Message: {self.service_message}'
+        return f'Originator: {self.requester_uuid}\n' \
+               f'Service Name: {self.service_name}\n' \
+               f'Service Message: {self.message}'

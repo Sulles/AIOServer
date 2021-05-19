@@ -232,7 +232,6 @@ class TUI(Client):
             # print(f"TUI _receiver: got data {data!r}")
             await self.tx_tui_event.send(
                 TUIEvent(TuiEventType.ServerEvent, data=self.parse_aio_message(data)))
-            await trio.sleep(0.01)
         print("TUI _receiver: connection closed")
         sys.exit()
 
@@ -266,13 +265,15 @@ class TUI(Client):
         """ Get character that a user has put in """
         await trio.sleep(0.2)   # don't be the first thing to start
         while True:
-            with trio.move_on_after(1):
+            with trio.move_on_after(0.1):
+                # Put self at end of event loop
+                for _ in range(5):
+                    await trio.sleep(0.001)
                 data = self._kbhit.getch()
                 if data in [_.decode('utf-8') for _ in [b'\x03', b'\x1a']]:
                     sys.exit()
                 await self.tx_tui_event.send(
                     TUIEvent(TuiEventType.UserEvent, data=data))
-                await trio.sleep(0.01)
 
     async def _tui_interface(self) -> None:
         """ Tui interface """
@@ -317,7 +318,7 @@ class TUI(Client):
                 sys.stdout.write('\r' + ''.join([' ' for _ in range(default_whitespace_length)]) +
                                  '\r> ' + self._user_input)
 
-            await trio.sleep(0.003)
+            await trio.sleep(0.001)
 
 
 if __name__ == '__main__':

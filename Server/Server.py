@@ -4,10 +4,6 @@ Server object
 
 from uuid import uuid1, UUID
 
-from os import listdir, name as os_name
-from os.path import isfile, join
-from pathlib import Path
-
 import trio
 
 from Server.AIOConnection import AIOConnection
@@ -78,10 +74,9 @@ class Server:
         """ Server event processor """
         async for event in self.rx_event_channel:
             if isinstance(event, ServiceRequestEvent):
-                print(f'Server got ServiceRequestEvent! {event}')
+                print(f'Server got ServiceRequestEvent!\n{event}')
                 try:
-                    await self._service_map[event.service_name](event.service_message,
-                                                                event.response_callback)
+                    await self._service_map[event.service_name](event)
                 except Exception as e:
                     print(f'CRITICAL ERROR: {e}')
             else:

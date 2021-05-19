@@ -20,17 +20,3 @@ enum AuthenticationStep {
   NEW_AES = 2;
   CONFIRMATION = 3;
 }
-
-/*
- * IPCAuthenticatorUpdate: Messages used between Server.Authenticator service and
-      Server.AIOConnection object to update AIOConnection object with current
-      encryption level/status
- */
-message IPCAuthenticatorUpdate {
-  // 1. set_encryption_type (note: EncryptionType defined in Base.proto)
-  EncryptionType set_encryption_type = 1;
-  // 2. optional rsa_key information
-  PublicRSAKey rsa_key = 2;
-  // 3. optional aes_key information
-  AESKey aes_key = 3;
-}

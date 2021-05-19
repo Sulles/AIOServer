@@ -7,6 +7,7 @@ from datetime import datetime
 import trio.lowlevel
 
 from CommonLib.proto.ChatBotMessage_pb2 import ChatBotMessage
+from Server.util import ServiceRequestEvent
 
 MAX_HISTORY_LENGTH = 10
 
@@ -18,7 +19,7 @@ class ChatBotService:
         """
         self._history: list[ChatBotMessage] = list()
         self._callbacks: list[trio.lowlevel.wait_writable] = list()
-        register_service('ChatBotMessage', self._handle_chat_bot_message)
+        register_service('ChatBotMessage', self._handle_chat_bot_message_event)
 
     def _add_to_history(self, message: ChatBotMessage):
         """ Add ChatBotMessage to ChatBotService history """
@@ -33,6 +34,7 @@ class ChatBotService:
         print(f'ChatBotService broadcasting message: {message}')
         for callback in self._callbacks:
             try:
+                await trio.sleep(1)
                 await callback(message)
             except Exception as e:
                 print(f'ChatBotService failed to send message due to error: {e}')
@@ -47,14 +49,13 @@ class ChatBotService:
                 print(f'ChatBotService failed to send ChatBot history due to error: {e}')
         self._callbacks.append(callback)
 
-    async def _handle_chat_bot_message(self, message: bytes,
-                                       response_callback: trio.lowlevel.wait_writable):
+    async def _handle_chat_bot_message_event(self, event: ServiceRequestEvent):
         """ Callback for every client message """
         chat_bot_message = ChatBotMessage()
-        chat_bot_message.ParseFromString(message)
+        chat_bot_message.ParseFromString(event.message)
         setattr(chat_bot_message, 'timestamp', datetime.timestamp(datetime.now()))
         self._add_to_history(chat_bot_message)
-        if response_callback not in self._callbacks:
-            await self._save_new_callback(response_callback)
+        if event.response_callback not in self._callbacks:
+            await self._save_new_callback(event.response_callback)
         else:
             await self._broadcast_latest_message(chat_bot_message)
