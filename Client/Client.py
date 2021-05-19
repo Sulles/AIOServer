@@ -8,7 +8,6 @@ from copy import copy
 from enum import IntEnum
 from queue import Queue, Empty
 from threading import Thread
-from time import sleep
 
 import trio
 from google.protobuf.message import Message
