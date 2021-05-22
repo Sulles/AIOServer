@@ -1,12 +1,20 @@
 """
-Server object
+----------------------------------------------------------------------------------------------------
+    Server
+----------------------------------------------------------------------------------------------------
+Description: The actual server
+Responsibilities:
+    - Entry point for all client communication
+    - Client connection registrar
+    - Service registrar
+    - Routing point for client connections and services
 """
 
 from uuid import uuid1, UUID
 
 import trio
 
-from Server.AIOConnection import AIOConnection
+from .AIOConnection import AIOConnection
 from .util import ServiceRequestEvent
 
 HOST = '127.0.0.1'

@@ -34,7 +34,6 @@ class ChatBotService:
         print(f'ChatBotService broadcasting message: {message}')
         for callback in self._callbacks:
             try:
-                await trio.sleep(1)
                 await callback(message)
             except Exception as e:
                 print(f'ChatBotService failed to send message due to error: {e}')
@@ -42,6 +41,7 @@ class ChatBotService:
 
     async def _save_new_callback(self, callback: trio.lowlevel.wait_writable):
         """ Try to send entire history to new connection """
+        print(f'Saving new callback, trying to send all messages in history:\n{self._history}')
         for message in self._history:
             try:
                 await callback(message)
@@ -55,7 +55,16 @@ class ChatBotService:
         chat_bot_message.ParseFromString(event.message)
         setattr(chat_bot_message, 'timestamp', datetime.timestamp(datetime.now()))
         self._add_to_history(chat_bot_message)
-        if event.response_callback not in self._callbacks:
+        print('Entering chat bot message event handler')
+        print(f'Is callback known? {event.response_callback in self._callbacks}')
+        print(f'Chat bot message received: {event.message}')
+        if event.response_callback not in self._callbacks and b'---Start---' in event.message:
+            print('Entering START')
             await self._save_new_callback(event.response_callback)
+        elif event.message == '---Stop---':
+            print('Entering STOP')
+            # Remove from callback
+            del self._callbacks[event.response_callback]
         else:
+            print('Entering OTHER')
             await self._broadcast_latest_message(chat_bot_message)

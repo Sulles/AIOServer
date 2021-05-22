@@ -3,37 +3,42 @@ Authenticator service
 
 All new connections to AIOServer must go through the following steps:
 
-1. Client -> Server: AIOMessage(encryption_type = RSA,
-                                encryption_timestamp = timestamp default Server RSA key was created,
-                                message_name = "Authenticator",
-                                message = {AuthenticationStep = NEW_SESSION,
-                                           new_rsa_key = RSAKey(client public RSA key)
-                                          }
-                                )
-2. Server -> Client: AIOMessage(encryption_type = RSA,
-                                encryption_timestamp = timestamp that client provided from (1.new_rsa_key),
-                                message_name = "Authenticator",
-                                message =  {AuthenticationStep = NEW_RSA,
-                                            new_rsa_key = RSAKey(server non-default Server public RSA key)
-                                           }
-                                )
-3. Client -> Server: AIOMessage(encryption_type = RSA,
-                                encryption_timestamp = timestamp that server provided from (2.new_rsa_key),
-                                message_name = "Authenticator",
-                                message = {AuthenticationStep = CONFIRMATION}
-                                )
-4. Server -> Client: AIOMessage(encryption_type = RSA,
-                                encryption_timestamp = timestamp that client provided from (1.new_rsa_key)
-                                message_name = "Authenticator",
-                                message = {AuthenticationStep = NEW_AES,
-                                           new_aes_key = AESKey(server initiated AES GCM key)
-                                           }
-                                )
-5. Client -> Server: AIOMessage(encryption_type = AES,
-                                encryption_timestamp = timestamp that server provided from (4.new_aes_key),
-                                message_name = "Authenticator",
-                                message = {AuthenticationStep = CONFIRMATION}
-                                )
+1. Client -> Server: AIOMessage(
+        encryption_type = RSA,
+        encryption_timestamp = timestamp default Server RSA key was created,
+        message_name = "Authenticator",
+        message = {AuthenticationStep = NEW_SESSION,
+                   new_rsa_key = RSAKey(client public RSA key)
+                  }
+        )
+2. Server -> Client: AIOMessage(
+        encryption_type = RSA,
+        encryption_timestamp = timestamp that client provided from (1.new_rsa_key),
+        message_name = "Authenticator",
+        message =  {AuthenticationStep = NEW_RSA,
+                    new_rsa_key = RSAKey(server non-default Server public RSA key)
+                   }
+        )
+3. Client -> Server: AIOMessage(
+        encryption_type = RSA,
+        encryption_timestamp = timestamp that server provided from (2.new_rsa_key),
+        message_name = "Authenticator",
+        message = {AuthenticationStep = CONFIRMATION}
+        )
+4. Server -> Client: AIOMessage(
+        encryption_type = RSA,
+        encryption_timestamp = timestamp that client provided from (1.new_rsa_key)
+        message_name = "Authenticator",
+        message = {AuthenticationStep = NEW_AES,
+                   new_aes_key = AESKey(server initiated AES GCM key)
+                   }
+        )
+5. Client -> Server: AIOMessage(
+        encryption_type = AES,
+        encryption_timestamp = timestamp that server provided from (4.new_aes_key),
+        message_name = "Authenticator",
+        message = {AuthenticationStep = CONFIRMATION}
+        )
 """
 
 import trio.lowlevel

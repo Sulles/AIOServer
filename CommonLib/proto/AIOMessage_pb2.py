@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10\x41IOMessage.proto\x1a\nBase.proto\"\xba\x01\n\nAIOMessage\x12(\n\x0f\x65ncryption_type\x18\x01 \x01(\x0e\x32\x0f.EncryptionType\x12\x1c\n\x14\x65ncryption_timestamp\x18\x02 \x01(\x02\x12\x14\n\x0cmessage_name\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\x0c\x12\x19\n\x11\x65ncrypted_message\x18\x05 \x03(\x0c\x12\x0b\n\x03tag\x18\x06 \x03(\x0c\x12\x15\n\x05\x65rror\x18\x07 \x01(\x0b\x32\x06.Errorb\x06proto3'
+  serialized_pb=b'\n\x10\x41IOMessage.proto\x1a\nBase.proto\"\xdc\x01\n\nAIOMessage\x12(\n\x0f\x65ncryption_type\x18\x01 \x01(\x0e\x32\x0f.EncryptionType\x12\x1c\n\x14\x65ncryption_timestamp\x18\x02 \x01(\x02\x12\x14\n\x0cmessage_name\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\x0c\x12\x19\n\x11\x65ncrypted_message\x18\x05 \x03(\x0c\x12\x0b\n\x03tag\x18\x06 \x03(\x0c\x12\x15\n\x05\x65rror\x18\x07 \x01(\x0b\x32\x06.Error\x12 \n\x0b\x63lient_info\x18\x08 \x01(\x0b\x32\x0b.ClientInfob\x06proto3'
   ,
   dependencies=[Base__pb2.DESCRIPTOR,])
 
@@ -84,6 +84,13 @@ _AIOMESSAGE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='client_info', full_name='AIOMessage.client_info', index=7,
+      number=8, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -97,11 +104,12 @@ _AIOMESSAGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=33,
-  serialized_end=219,
+  serialized_end=253,
 )
 
 _AIOMESSAGE.fields_by_name['encryption_type'].enum_type = Base__pb2._ENCRYPTIONTYPE
 _AIOMESSAGE.fields_by_name['error'].message_type = Base__pb2._ERROR
+_AIOMESSAGE.fields_by_name['client_info'].message_type = Base__pb2._CLIENTINFO
 DESCRIPTOR.message_types_by_name['AIOMessage'] = _AIOMESSAGE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
