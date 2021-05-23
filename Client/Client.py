@@ -7,7 +7,6 @@ import trio
 
 from google.protobuf.message import Message
 
-from CommonLib.proto.Base_pb2 import ClientInfo
 from CommonLib.proto.AIOMessage_pb2 import AIOMessage
 from CommonLib.proto.TUIMessage_pb2 import TUIMessage
 
@@ -108,16 +107,10 @@ class Client:
         # print(f'Built TUI message: {tui_msg}')
         return tui_msg
 
-    def _build_client_info(self) -> bytes:
-        client_info = ClientInfo()
-        client_info.username = self.username
-        return client_info.SerializeToString()
-
     def build_aio_message(self, base_message: Message) -> AIOMessage:
         aio_msg = AIOMessage()
         aio_msg.message_name = base_message.DESCRIPTOR.name
         aio_msg.message = base_message.SerializeToString()
-        aio_msg.client_info.ParseFromString(self._build_client_info())
         # print(f'Built AIO message: {aio_msg}')
         return self._encrypt(aio_msg)
 

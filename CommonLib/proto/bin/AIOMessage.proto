@@ -21,6 +21,4 @@ message AIOMessage {
   repeated bytes tag = 6;
   // 7. error: optional error information
   Error error = 7;
-  // 8. client_info: client information
-  ClientInfo client_info = 8;
 }

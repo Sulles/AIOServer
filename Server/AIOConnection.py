@@ -19,12 +19,13 @@ class AIOConnection:
         :param server_event_handler:
         """
         # General information
-        self._is_alive = True
-        self._uuid = uuid
+        self._is_alive: bool = True
+        self._uuid: UUID = uuid
+        self._username: str = ''
 
         # Connection stream and server event handler
-        self._connection_stream = connection_stream
-        self._server_event_handler = server_event_handler
+        self._connection_stream: trio.SocketStream = connection_stream
+        self._server_event_handler: trio.abc.SendChannel.send = server_event_handler
 
     def __str__(self):
         return f'[AIOConnection:{self._uuid}]'

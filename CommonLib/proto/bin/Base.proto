@@ -42,14 +42,6 @@ enum EncryptionType {
 }
 
 /*
- * ClientInfo: Message for containing all client info
- */
-message ClientInfo {
-  // 1. username
-  string username = 1;
-}
-
-/*
  * RSAKey: Message for storing public RSA key information
  */
 message PublicRSAKey {

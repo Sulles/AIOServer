@@ -4,13 +4,14 @@ TUI Class
 
 import sys
 import os
+import datetime
 
 from copy import copy
 from enum import IntEnum
 from queue import Queue, Empty
 from threading import Thread
 
-from CommonLib.proto.ChatBotMessage_pb2 import ChatBotMessage
+from CommonLib.proto.ChatRoomMessage_pb2 import ChatRoomMessage
 
 from .Client import *
 from .KBHit import KBHit
@@ -99,9 +100,9 @@ class TUI(Client):
         elif self._state == TuiState.ChatBot:
             return self._build_chat_bot_message(text)
 
-    def _build_chat_bot_message(self, message: str) -> ChatBotMessage:
-        """ Build ChatBotMessage """
-        chat_bot_message = ChatBotMessage()
+    def _build_chat_bot_message(self, message: str) -> ChatRoomMessage:
+        """ Build ChatRoomMessage """
+        chat_bot_message = ChatRoomMessage()
         chat_bot_message.author = self.username
         chat_bot_message.message = message
         return chat_bot_message
@@ -134,7 +135,18 @@ class TUI(Client):
         :param aio_message:
         :return:
         """
-        return aio_message
+        if self._state == TuiState.ChatBot:
+            chat_bot_msg = ChatRoomMessage()
+            if aio_message.message_name != chat_bot_msg.DESCRIPTOR.name:
+                print(f'Expected "ChatRoomMessage", received: "{aio_message.message_name}"')
+            else:
+                chat_bot_msg.ParseFromString(aio_message.message)
+                timestamp = datetime.datetime.fromtimestamp(chat_bot_msg.timestamp)
+                return f'[{timestamp.strftime("%a - %H:%M:%S")}] {chat_bot_msg.author}: ' \
+                       f'{chat_bot_msg.message}'
+        else:
+            return f'Received message "{aio_message.message_name}" with data:\n' \
+                   f'{aio_message.message}'
 
     async def _commit_user_input(self) -> None:
         """ Commit user input to history and send to Server """
@@ -254,7 +266,8 @@ class TUI(Client):
             await trio.sleep(0.001)
 
     def cleanup(self):
-        """ Add some stuff to base cleanup """
+        """ Add Getch cleanup to base Client cleanup """
+
         print('Press "Delete" to exit...')
         self._getch_thread.join()
 

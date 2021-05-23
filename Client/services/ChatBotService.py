@@ -2,7 +2,7 @@
 Client Chat Bot Service
 """
 
-from CommonLib.proto.ChatBotMessage_pb2 import ChatBotMessage
+from CommonLib.proto.ChatRoomMessage_pb2 import ChatBotMessage
 
 
 class ChatBotService:

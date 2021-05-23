@@ -16,10 +16,10 @@ class ServiceRequestEvent:
         :param message: ServiceMessage used to communicate to specific service
         :param response_callback: Awaitable callback for sending a response
         """
-        self.requester_uuid = requester_uuid
-        self.service_name = service_name
-        self.message = message
-        self.response_callback = response_callback
+        self.requester_uuid: int = requester_uuid
+        self.service_name: str = service_name
+        self.message: Message = message
+        self.response_callback: trio.lowlevel.wait_writable = response_callback
 
     def __str__(self):
         return f'Originator: {self.requester_uuid}\n' \
