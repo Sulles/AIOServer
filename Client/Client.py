@@ -10,7 +10,7 @@ from google.protobuf.message import Message
 from CommonLib.proto.AIOMessage_pb2 import AIOMessage
 from CommonLib.proto.TUIMessage_pb2 import TUIMessage
 
-HOST = '127.0.0.1'
+HOST = '35.231.117.203'
 PORT = 8888
 TUI_HISTORY_LENGTH = 10
 

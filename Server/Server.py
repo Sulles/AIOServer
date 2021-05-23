@@ -17,7 +17,7 @@ import trio
 from .AIOConnection import AIOConnection
 from .util import ServiceRequestEvent
 
-HOST = '127.0.0.1'
+HOST = ''
 PORT = 8888
 
 
