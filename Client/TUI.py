@@ -19,7 +19,7 @@ from .KBHit import KBHit
 
 class TuiState(IntEnum):
     TUI = 0
-    ChatBot = 1
+    ChatRoom = 1
 
 
 class TuiEventType(IntEnum):
@@ -73,7 +73,7 @@ class TUI(Client):
         self._state = TuiState.TUI
         self._commands = {'help': self._get_help,
                           'set state tui': self._set_state_tui,
-                          'set state chatbot': self._set_state_chatbot}
+                          'set state chatroom': self._set_state_chatroom}
         Client.__init__(self)
 
     async def _get_help(self) -> str:
@@ -86,9 +86,9 @@ class TUI(Client):
             self.build_aio_message(
                 self._build_chat_bot_message('---Stop---')))
 
-    async def _set_state_chatbot(self) -> None:
-        """ Set TUI object state to ChatBot """
-        self._state = TuiState.ChatBot
+    async def _set_state_chatroom(self) -> None:
+        """ Set TUI object state to ChatRoom """
+        self._state = TuiState.ChatRoom
         await self.tx_send_server_channel.send(
             self.build_aio_message(
                 self._build_chat_bot_message('---Start---')))
@@ -97,7 +97,7 @@ class TUI(Client):
         """ Build state specific message """
         if self._state == TuiState.TUI:
             return self.build_tui_message(text)
-        elif self._state == TuiState.ChatBot:
+        elif self._state == TuiState.ChatRoom:
             return self._build_chat_bot_message(text)
 
     def _build_chat_bot_message(self, message: str) -> ChatRoomMessage:
@@ -135,7 +135,7 @@ class TUI(Client):
         :param aio_message:
         :return:
         """
-        if self._state == TuiState.ChatBot:
+        if self._state == TuiState.ChatRoom:
             chat_bot_msg = ChatRoomMessage()
             if aio_message.message_name != chat_bot_msg.DESCRIPTOR.name:
                 print(f'Expected "ChatRoomMessage", received: "{aio_message.message_name}"')
@@ -158,7 +158,7 @@ class TUI(Client):
                 self.build_aio_message(
                     self._build_state_message(self._user_input)))
             # Only add message to user history if not using the chat bot
-            if self._state != TuiState.ChatBot:
+            if self._state != TuiState.ChatRoom:
                 self._add_to_history(self._user_input)
         self._user_input = ''
 
