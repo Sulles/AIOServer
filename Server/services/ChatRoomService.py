@@ -29,6 +29,7 @@ class ChatRoomService:
             except Exception as e:
                 print(f'ChatBotService failed to send message due to error: {e}')
                 self._callbacks.remove(callback)
+                pass
 
     async def _broadcast_new_user(self, new_user: str):
         """ Broadcast new user to everyone connected """
