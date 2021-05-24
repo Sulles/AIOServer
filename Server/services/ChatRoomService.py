@@ -24,13 +24,15 @@ class ChatRoomService:
     async def _broadcast_latest_message(self, message: ChatRoomMessage):
         """ Try to send message to all callbacks """
         print(f'ChatBotService broadcasting message: {message}')
-        for callback in deepcopy(self._callbacks):
+        inactive_callbacks = list()
+        for callback in self._callbacks:
             try:
                 await callback(message)
             except Exception as e:
                 print(f'ChatBotService failed to send message due to error: {e}')
-                self._callbacks.remove(callback)
-                pass
+                inactive_callbacks.append(callback)
+        for callback in inactive_callbacks:
+            self._callbacks.remove(callback)
 
     async def _broadcast_new_user(self, new_user: str):
         """ Broadcast new user to everyone connected """
