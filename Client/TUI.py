@@ -42,6 +42,7 @@ def enqueue_getch(input_queue: Queue, kbhit: KBHit):
     while True:
         try:
             new_input = kbhit.getch()
+            assert new_input != '\x1b', 'Received Unix Delete!'
             if new_input is not None:
                 input_queue.put(new_input)
         except UnicodeDecodeError:
@@ -119,7 +120,7 @@ class TUI(Client):
                     await self._commit_user_input()
                 else:
                     # Otherwise just append data to the user input
-                    if tui_event.data == '\x08':    # backspace
+                    if tui_event.data == ('\x08' if os.name == 'nt' else '\x7f'):    # backspace
                         self._user_input = self._user_input[:-1]
                     else:
                         self._user_input += tui_event.data
