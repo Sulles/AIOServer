@@ -2,7 +2,6 @@
 Server Chat Bot Service
 """
 
-from copy import deepcopy
 from datetime import datetime
 
 import trio.lowlevel
