@@ -2,6 +2,7 @@
 Server Chat Bot Service
 """
 
+from copy import deepcopy
 from datetime import datetime
 
 import trio.lowlevel
@@ -23,7 +24,7 @@ class ChatRoomService:
     async def _broadcast_latest_message(self, message: ChatRoomMessage):
         """ Try to send message to all callbacks """
         print(f'ChatBotService broadcasting message: {message}')
-        for callback in self._callbacks:
+        for callback in deepcopy(self._callbacks):
             try:
                 await callback(message)
             except Exception as e:
