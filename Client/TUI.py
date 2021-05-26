@@ -42,8 +42,9 @@ def enqueue_getch(input_queue: Queue, kbhit: KBHit):
     while True:
         try:
             new_input = kbhit.getch()
-            assert new_input != '\x1b', 'Received Unix Delete!'
-            if new_input is not None:
+            if new_input == '\x1b':
+                raise ClientTerminationEvent
+            elif new_input is not None:
                 input_queue.put(new_input)
         except UnicodeDecodeError:
             break
@@ -128,14 +129,10 @@ class TUI(Client):
             elif tui_event.event_type == TuiEventType.ServerMessage:
                 # self._add_to_history(f'TUI event processor got server event! '
                 #                      f'Event data: {tui_event.data}')
-                self._add_to_history(self._parse_server_event_by_state(tui_event.data))
+                self._add_to_history(self._parse_server_message_to_string(tui_event.data))
 
-    def _parse_server_event_by_state(self, aio_message: AIOMessage) -> str:
-        """
-        TODO: This...
-        :param aio_message:
-        :return:
-        """
+    def _parse_server_message_to_string(self, aio_message: AIOMessage) -> str:
+        """ Parse an AIOMessage sent by the AIOServer and return string data """
         if self._state == TuiState.ChatRoom:
             chat_bot_msg = ChatRoomMessage()
             if aio_message.message_name != chat_bot_msg.DESCRIPTOR.name:

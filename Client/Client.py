@@ -67,6 +67,12 @@ class Client:
             self.services.append(service_class(self.register_service))
         [print(f'Added {_} to server services list') for _ in self.services]
 
+    def _parse_aio_message(self, data: bytes) -> AIOMessage:
+        """ Decode and decrypt AIOMessages sent by an AIOServer """
+        message = AIOMessage()
+        message.ParseFromString(data)
+        return self._decrypt(message)
+
     async def _sender(self, client_stream):
         """
         Sender monitors rx_send_server_channel for AIOMessages to serialize and send to Server
@@ -81,7 +87,8 @@ class Client:
         # TODO: Finalize this for generic Client use
         print("_receiver: started!")
         async for data in client_stream:
-            print(f"_receiver: got data {data!r}")
+            message = self._parse_aio_message(data)
+            print(f"_receiver: got message {message}")
         print("_receiver: connection closed")
         raise ClientTerminationEvent
 
@@ -137,5 +144,5 @@ class Client:
 
 
 if __name__ == '__main__':
-    raise not NotImplementedError
+    raise NotImplementedError('Use Client.TUI as a CLI')
 
