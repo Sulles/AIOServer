@@ -12,7 +12,6 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-import Base_pb2 as Base__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -21,9 +20,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x13\x41uthenticator.proto\x1a\nBase.proto\"\x8a\x01\n\x14\x41uthenticatorMessage\x12\x30\n\x13\x61uthentication_step\x18\x01 \x01(\x0e\x32\x13.AuthenticationStep\x12\"\n\x0bnew_rsa_key\x18\x02 \x01(\x0b\x32\r.PublicRSAKey\x12\x1c\n\x0bnew_aes_key\x18\x03 \x01(\x0b\x32\x07.AESKey*Q\n\x12\x41uthenticationStep\x12\x0f\n\x0bNEW_SESSION\x10\x00\x12\x0b\n\x07NEW_RSA\x10\x01\x12\x0b\n\x07NEW_AES\x10\x02\x12\x10\n\x0c\x43ONFIRMATION\x10\x03\x62\x06proto3'
-  ,
-  dependencies=[Base__pb2.DESCRIPTOR,])
+  serialized_pb=b'\n\x13\x41uthenticator.proto\"7\n\x0cPublicRSAKey\x12\t\n\x01n\x18\x01 \x01(\x0c\x12\t\n\x01\x65\x18\x02 \x01(\x0c\x12\x11\n\ttimestamp\x18\x03 \x01(\x02\"7\n\x06\x41\x45SKey\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05nonce\x18\x02 \x01(\x0c\x12\x11\n\ttimestamp\x18\x03 \x01(\x02\"\x8a\x01\n\x14\x41uthenticatorMessage\x12\x30\n\x13\x61uthentication_step\x18\x01 \x01(\x0e\x32\x13.AuthenticationStep\x12\"\n\x0bnew_rsa_key\x18\x02 \x01(\x0b\x32\r.PublicRSAKey\x12\x1c\n\x0bnew_aes_key\x18\x03 \x01(\x0b\x32\x07.AESKey*Q\n\x12\x41uthenticationStep\x12\x0f\n\x0bNEW_SESSION\x10\x00\x12\x0b\n\x07NEW_RSA\x10\x01\x12\x0b\n\x07NEW_AES\x10\x02\x12\x10\n\x0c\x43ONFIRMATION\x10\x03\x62\x06proto3'
+)
 
 _AUTHENTICATIONSTEP = _descriptor.EnumDescriptor(
   name='AuthenticationStep',
@@ -55,8 +53,8 @@ _AUTHENTICATIONSTEP = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=176,
-  serialized_end=257,
+  serialized_start=278,
+  serialized_end=359,
 )
 _sym_db.RegisterEnumDescriptor(_AUTHENTICATIONSTEP)
 
@@ -66,6 +64,98 @@ NEW_RSA = 1
 NEW_AES = 2
 CONFIRMATION = 3
 
+
+
+_PUBLICRSAKEY = _descriptor.Descriptor(
+  name='PublicRSAKey',
+  full_name='PublicRSAKey',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='n', full_name='PublicRSAKey.n', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='e', full_name='PublicRSAKey.e', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='PublicRSAKey.timestamp', index=2,
+      number=3, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=23,
+  serialized_end=78,
+)
+
+
+_AESKEY = _descriptor.Descriptor(
+  name='AESKey',
+  full_name='AESKey',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='AESKey.key', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='nonce', full_name='AESKey.nonce', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='AESKey.timestamp', index=2,
+      number=3, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=80,
+  serialized_end=135,
+)
 
 
 _AUTHENTICATORMESSAGE = _descriptor.Descriptor(
@@ -109,16 +199,32 @@ _AUTHENTICATORMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=36,
-  serialized_end=174,
+  serialized_start=138,
+  serialized_end=276,
 )
 
 _AUTHENTICATORMESSAGE.fields_by_name['authentication_step'].enum_type = _AUTHENTICATIONSTEP
-_AUTHENTICATORMESSAGE.fields_by_name['new_rsa_key'].message_type = Base__pb2._PUBLICRSAKEY
-_AUTHENTICATORMESSAGE.fields_by_name['new_aes_key'].message_type = Base__pb2._AESKEY
+_AUTHENTICATORMESSAGE.fields_by_name['new_rsa_key'].message_type = _PUBLICRSAKEY
+_AUTHENTICATORMESSAGE.fields_by_name['new_aes_key'].message_type = _AESKEY
+DESCRIPTOR.message_types_by_name['PublicRSAKey'] = _PUBLICRSAKEY
+DESCRIPTOR.message_types_by_name['AESKey'] = _AESKEY
 DESCRIPTOR.message_types_by_name['AuthenticatorMessage'] = _AUTHENTICATORMESSAGE
 DESCRIPTOR.enum_types_by_name['AuthenticationStep'] = _AUTHENTICATIONSTEP
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+PublicRSAKey = _reflection.GeneratedProtocolMessageType('PublicRSAKey', (_message.Message,), {
+  'DESCRIPTOR' : _PUBLICRSAKEY,
+  '__module__' : 'Authenticator_pb2'
+  # @@protoc_insertion_point(class_scope:PublicRSAKey)
+  })
+_sym_db.RegisterMessage(PublicRSAKey)
+
+AESKey = _reflection.GeneratedProtocolMessageType('AESKey', (_message.Message,), {
+  'DESCRIPTOR' : _AESKEY,
+  '__module__' : 'Authenticator_pb2'
+  # @@protoc_insertion_point(class_scope:AESKey)
+  })
+_sym_db.RegisterMessage(AESKey)
 
 AuthenticatorMessage = _reflection.GeneratedProtocolMessageType('AuthenticatorMessage', (_message.Message,), {
   'DESCRIPTOR' : _AUTHENTICATORMESSAGE,

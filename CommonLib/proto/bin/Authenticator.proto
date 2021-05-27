@@ -1,6 +1,31 @@
 syntax = "proto3";
 
-import "Base.proto";
+/*
+ * PublicRSAKey: Message for storing public RSA key information
+ */
+message PublicRSAKey {
+  // 1. 'n'
+  bytes n = 1;
+  // 2. 'e'
+  bytes e = 2;
+  // 3. timestamp of RSA key creation
+  float timestamp = 3;
+}
+
+
+/*
+ * AESKey: Message containing updated AES GCM information
+ * !!! WARNING: This must never be sent as plain text !!!
+ */
+message AESKey {
+  // 1. key
+  bytes key = 1;
+  // 2. nonce
+  bytes nonce = 2;
+  // 3. timestamp
+  float timestamp = 3;
+}
+
 
 /*
  * AuthenticatorMessage: Messages used for automatic authentication between Client and Server

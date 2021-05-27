@@ -19,6 +19,8 @@ message AIOMessage {
   repeated bytes encrypted_messages = 5;
   // 6. tags: optional AES GCM tags for each encrypted message
   repeated bytes tags = 6;
-  // 7. error: optional error information
-  Error error = 7;
+  // 7. nonces: optional AES GCM nonces for each encrypted message
+  repeated bytes nonces = 7;
+  // 8. error: optional error information
+  Error error = 8;
 }

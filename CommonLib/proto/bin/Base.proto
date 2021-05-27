@@ -40,28 +40,3 @@ enum EncryptionType {
   RSA = 1;
   AES = 2;
 }
-
-/*
- * RSAKey: Message for storing public RSA key information
- */
-message PublicRSAKey {
-  // 1. 'n'
-  bytes n = 1;
-  // 2. 'e'
-  bytes e = 2;
-  // 3. timestamp of RSA key creation
-  float timestamp = 3;
-}
-
-/*
- * AESKey: Message for storing private AES key information
- * !!! WARNING: This must never be sent as plain text !!!
- */
-message AESKey {
-  // 1. key
-  bytes key = 1;
-  // 2. nonce
-  bytes nonce = 2;
-  // 3. timestamp
-  float timestamp = 3;
-}
