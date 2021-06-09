@@ -5,7 +5,7 @@ AIO Connection Object
 import trio
 
 from uuid import UUID
-from .util import ServiceRequestEvent
+from .util import ServiceMessageEvent
 from google.protobuf.message import Message
 from CommonLib.proto.AIOMessage_pb2 import AIOMessage
 
@@ -50,12 +50,12 @@ class AIOConnection:
         except trio.BrokenResourceError as e:
             print(f'{e}')
 
-    def _aio_msg_to_service_request(self, aio_message: AIOMessage) -> ServiceRequestEvent:
+    def _aio_msg_to_service_request(self, aio_message: AIOMessage) -> ServiceMessageEvent:
         """
         Convert a received and decrypted AIOMessage into a ServiceRequestEvent
         :param aio_message: Decrypted AIOMessage received from a client
         """
-        return ServiceRequestEvent(
+        return ServiceMessageEvent(
             requester_uuid=self._uuid.int,
             service_name=aio_message.message_name,
             message=aio_message.message,

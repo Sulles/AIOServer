@@ -6,7 +6,7 @@ import trio.lowlevel
 from google.protobuf.message import Message
 
 
-class ServiceRequestEvent:
+class ServiceMessageEvent:
     def __init__(self, requester_uuid: int, service_name: str, message: Message,
                  response_callback: trio.lowlevel.wait_writable):
         """
@@ -22,6 +22,7 @@ class ServiceRequestEvent:
         self.response_callback: trio.lowlevel.wait_writable = response_callback
 
     def __str__(self):
-        return f'Originator: {self.requester_uuid}\n' \
+        return f'--- ServiceMessageEvent ---\n' \
+               f'Originator: {self.requester_uuid}\n' \
                f'Service Name: {self.service_name}\n' \
                f'Service Message: {self.message}'

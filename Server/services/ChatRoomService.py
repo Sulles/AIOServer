@@ -7,7 +7,7 @@ from datetime import datetime
 import trio.lowlevel
 
 from CommonLib.proto.ChatRoomMessage_pb2 import ChatRoomMessage
-from Server.util import ServiceRequestEvent
+from Server.util import ServiceMessageEvent
 
 MAX_HISTORY_LENGTH = 10
 
@@ -47,7 +47,7 @@ class ChatRoomService:
         print('Saving new callback, sending notification to all users')
         self._callbacks.append(callback)
 
-    async def _handle_chat_bot_message_event(self, event: ServiceRequestEvent):
+    async def _handle_chat_bot_message_event(self, event: ServiceMessageEvent):
         """ Callback for every client message """
         chat_bot_message = ChatRoomMessage()
         chat_bot_message.ParseFromString(event.message)

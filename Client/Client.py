@@ -10,7 +10,8 @@ from google.protobuf.message import Message
 from CommonLib.proto.AIOMessage_pb2 import AIOMessage
 from CommonLib.proto.TUIMessage_pb2 import TUIMessage
 
-HOST = '34.75.107.183'
+# HOST = '34.75.107.183'
+HOST = '127.0.0.1'
 PORT = 8888
 TUI_HISTORY_LENGTH = 10
 
@@ -20,14 +21,29 @@ class ClientTerminationEvent(BaseException):
     pass
 
 
+class ClientEvent:
+    """ Any event sent to the client event processor """
+    def __init__(self, service_name: str, data: bytes):
+        self.service_name = service_name
+        self.data = data
+
+    def __str__(self):
+        return f'--- ClientEvent ---\n' \
+               f'Service Name: {self.service_name}\n' \
+               f'Data: {self.data}'
+
+
 class Client:
     """
     Client connection to AIOServer
     """
+    tx_event_channel: trio.abc.SendChannel[ClientEvent]
+    rx_event_channel: trio.abc.ReceiveChannel[ClientEvent]
     tx_send_server_channel: trio.abc.SendChannel[AIOMessage]
     rx_send_server_channel: trio.abc.ReceiveChannel[AIOMessage]
 
-    def __init__(self):
+    def __init__(self, cli_mode: bool = False):
+        self._cli_mode = cli_mode
         self._is_alive = True
         self.username = input('Username: ')
         # self.__pwd = getpass('Password: ')    # TODO: implement with encryption
@@ -63,7 +79,7 @@ class Client:
             service_module = service_module.__dict__['services'].__dict__[service_file]
             service_class = getattr(service_module, service_file)
             # All service classes must be initialize themselves with register callback
-            #   in order to map Message object names to Service object handlers
+            # in order to map Message object names to Service object handlers
             self.services.append(service_class(self.register_service))
         [print(f'Added {_} to server services list') for _ in self.services]
 
@@ -89,23 +105,57 @@ class Client:
         async for data in client_stream:
             message = self._parse_aio_message(data)
             print(f"_receiver: got message {message}")
+            await self.tx_event_channel.send(
+                ClientEvent(service_name=message.message_name, data=message.message))
         print("_receiver: connection closed")
         raise ClientTerminationEvent
 
+    async def _event_processor(self) -> None:
+        """ Client event processor """
+        async for event in self.rx_event_channel:
+            if isinstance(event, ClientEvent):
+                print(f'Client got ClientEvent!\n{event}')
+                try:
+                    await self._service_map[event.service_name](event)
+                except Exception as e:
+                    print(f'CRITICAL ERROR: {e}')
+            else:
+                print(f'Client got unsupported event: {event}')
+
     async def run(self):
         print(f"client: connecting to {HOST}:{PORT}")
+
+        # Create client stream to server
         client_stream = await trio.open_tcp_stream(HOST, PORT)
+
+        # Create event channels
+        self.tx_event_channel, self.rx_event_channel = trio.open_memory_channel(0)
         self.tx_send_server_channel, self.rx_send_server_channel = trio.open_memory_channel(0)
+
         async with client_stream:
             async with trio.open_nursery() as nursery:
                 print("client: starting services...")
                 self._start_all_services()
+
+                print("client: spawning _event_processor...")
+                nursery.start_soon(self._event_processor)
 
                 print("client: spawning _sender...")
                 nursery.start_soon(self._sender, client_stream)
 
                 print("client: spawning _receiver...")
                 nursery.start_soon(self._receiver, client_stream)
+
+                if self._cli_mode:
+                    print("client: spawning _get_cli_input")
+                    nursery.start_soon(self._get_cli_input)
+
+    async def _get_cli_input(self):
+        while True:
+            user_input = input('# ')
+            await self.tx_event_channel.send(
+                ClientEvent(service_name='CLI', data=user_input.encode()))
+            await trio.sleep(0.1)
 
     @staticmethod
     def build_tui_message(message: str) -> TUIMessage:
@@ -144,5 +194,14 @@ class Client:
 
 
 if __name__ == '__main__':
-    raise NotImplementedError('Use Client.TUI as a CLI')
+    print('For a proper TUI, please use Client.TUI')
+    client = Client(cli_mode=True)
 
+    try:
+        trio.run(client.run)
+
+    except KeyboardInterrupt:
+        print('\n--- Keyboard Interrupt Detected ---\n')
+
+    finally:
+        client.cleanup()

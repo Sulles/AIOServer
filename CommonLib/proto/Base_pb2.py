@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\nBase.proto\">\n\x05\x45rror\x12\x1e\n\nerror_code\x18\x01 \x01(\x0e\x32\n.ErrorCode\x12\x15\n\rerror_details\x18\x02 \x01(\t*\xc0\x02\n\tErrorCode\x12\x11\n\rUNKNOWN_ERROR\x10\x00\x12\r\n\tCLI_ERROR\x10\x01\x12\r\n\tRSA_ERROR\x10\x02\x12\r\n\tAES_ERROR\x10\x03\x12\x16\n\x12KEY_EXCHANGE_ERROR\x10\x04\x12\x14\n\x10\x44\x45\x43RYPTION_ERROR\x10\x05\x12\x14\n\x10\x45NCRYPTION_ERR0R\x10\x06\x12\x11\n\rTIMEOUT_ERROR\x10\x07\x12\x19\n\x15INVALID_REQUEST_ERROR\x10\x08\x12\x1a\n\x16INVALID_RESPONSE_ERROR\x10\t\x12\x12\n\x0eSECURITY_ERROR\x10\n\x12\x10\n\x0cSERVER_ERROR\x10\x0b\x12\x11\n\rSERVICE_ERROR\x10\x0c\x12\x11\n\rPARSING_ERROR\x10\r\x12\x19\n\x15PASSWORD_CHANGE_ERROR\x10\x0e*2\n\x0e\x45ncryptionType\x12\x0e\n\nPLAIN_TEXT\x10\x00\x12\x07\n\x03RSA\x10\x01\x12\x07\n\x03\x41\x45S\x10\x02\x62\x06proto3'
+  serialized_pb=b'\n\nBase.proto\">\n\x05\x45rror\x12\x1e\n\nerror_code\x18\x01 \x01(\x0e\x32\n.ErrorCode\x12\x15\n\rerror_details\x18\x02 \x01(\t*\xe8\x02\n\tErrorCode\x12\x11\n\rUNKNOWN_ERROR\x10\x00\x12\r\n\tCLI_ERROR\x10\x01\x12\r\n\tRSA_ERROR\x10\x02\x12\r\n\tAES_ERROR\x10\x03\x12\x16\n\x12KEY_EXCHANGE_ERROR\x10\x04\x12\x14\n\x10\x44\x45\x43RYPTION_ERROR\x10\x05\x12\x14\n\x10\x45NCRYPTION_ERR0R\x10\x06\x12\x11\n\rTIMEOUT_ERROR\x10\x07\x12\x19\n\x15INVALID_REQUEST_ERROR\x10\x08\x12\x1a\n\x16INVALID_RESPONSE_ERROR\x10\t\x12\x12\n\x0eSECURITY_ERROR\x10\n\x12\x10\n\x0cSERVER_ERROR\x10\x0b\x12\x11\n\rSERVICE_ERROR\x10\x0c\x12\x11\n\rPARSING_ERROR\x10\r\x12\x19\n\x15PASSWORD_CHANGE_ERROR\x10\x0e\x12\x12\n\x0e\x45NCODING_ERROR\x10\x0f\x12\x12\n\x0e\x44\x45\x43ODING_ERROR\x10\x10*X\n\x15\x43ommunicationProtocol\x12\x0e\n\nPLAIN_TEXT\x10\x00\x12\x07\n\x03RSA\x10\x01\x12\x07\n\x03\x41\x45S\x10\x02\x12\n\n\x06\x43HACHA\x10\x03\x12\x07\n\x03\x43\x41N\x10\x04\x12\x08\n\x04MQTT\x10\x05\x62\x06proto3'
 )
 
 _ERRORCODE = _descriptor.EnumDescriptor(
@@ -105,18 +105,28 @@ _ERRORCODE = _descriptor.EnumDescriptor(
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ENCODING_ERROR', index=15, number=15,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='DECODING_ERROR', index=16, number=16,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
   serialized_start=79,
-  serialized_end=399,
+  serialized_end=439,
 )
 _sym_db.RegisterEnumDescriptor(_ERRORCODE)
 
 ErrorCode = enum_type_wrapper.EnumTypeWrapper(_ERRORCODE)
-_ENCRYPTIONTYPE = _descriptor.EnumDescriptor(
-  name='EncryptionType',
-  full_name='EncryptionType',
+_COMMUNICATIONPROTOCOL = _descriptor.EnumDescriptor(
+  name='CommunicationProtocol',
+  full_name='CommunicationProtocol',
   filename=None,
   file=DESCRIPTOR,
   create_key=_descriptor._internal_create_key,
@@ -136,15 +146,30 @@ _ENCRYPTIONTYPE = _descriptor.EnumDescriptor(
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='CHACHA', index=3, number=3,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='CAN', index=4, number=4,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='MQTT', index=5, number=5,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=401,
-  serialized_end=451,
+  serialized_start=441,
+  serialized_end=529,
 )
-_sym_db.RegisterEnumDescriptor(_ENCRYPTIONTYPE)
+_sym_db.RegisterEnumDescriptor(_COMMUNICATIONPROTOCOL)
 
-EncryptionType = enum_type_wrapper.EnumTypeWrapper(_ENCRYPTIONTYPE)
+CommunicationProtocol = enum_type_wrapper.EnumTypeWrapper(_COMMUNICATIONPROTOCOL)
 UNKNOWN_ERROR = 0
 CLI_ERROR = 1
 RSA_ERROR = 2
@@ -160,9 +185,14 @@ SERVER_ERROR = 11
 SERVICE_ERROR = 12
 PARSING_ERROR = 13
 PASSWORD_CHANGE_ERROR = 14
+ENCODING_ERROR = 15
+DECODING_ERROR = 16
 PLAIN_TEXT = 0
 RSA = 1
 AES = 2
+CHACHA = 3
+CAN = 4
+MQTT = 5
 
 
 
@@ -207,7 +237,7 @@ _ERROR = _descriptor.Descriptor(
 _ERROR.fields_by_name['error_code'].enum_type = _ERRORCODE
 DESCRIPTOR.message_types_by_name['Error'] = _ERROR
 DESCRIPTOR.enum_types_by_name['ErrorCode'] = _ERRORCODE
-DESCRIPTOR.enum_types_by_name['EncryptionType'] = _ENCRYPTIONTYPE
+DESCRIPTOR.enum_types_by_name['CommunicationProtocol'] = _COMMUNICATIONPROTOCOL
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Error = _reflection.GeneratedProtocolMessageType('Error', (_message.Message,), {

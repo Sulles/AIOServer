@@ -6,8 +6,8 @@ import "Base.proto";
  * AIOMessage: Wrapper for all messages communicated between AIOServer and AIOClients
  */
 message AIOMessage {
-  // 1. encryption_type: encryption type applied to serialized message
-  EncryptionType encryption_type = 1;
+  // 1. communication_protocol: communication protocol applied to serialized message
+  CommunicationProtocol communication_protocol = 1;
   // 2. encryption_timestamp: timestamp that encryption was established
   float encryption_timestamp = 2;
   // 3. message_name: string name of serialized message

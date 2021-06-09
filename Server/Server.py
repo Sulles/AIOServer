@@ -15,7 +15,7 @@ from uuid import uuid1, UUID
 import trio
 
 from .AIOConnection import AIOConnection
-from .util import ServiceRequestEvent
+from .util import ServiceMessageEvent
 
 HOST = '0.0.0.0'
 PORT = 8888
@@ -81,8 +81,8 @@ class Server:
     async def _event_processor(self):
         """ Server event processor """
         async for event in self.rx_event_channel:
-            if isinstance(event, ServiceRequestEvent):
-                print(f'Server got ServiceRequestEvent!\n{event}')
+            if isinstance(event, ServiceMessageEvent):
+                print(f'Server got ServiceMessageEvent!\n{event}')
                 try:
                     await self._service_map[event.service_name](event)
                 except Exception as e:

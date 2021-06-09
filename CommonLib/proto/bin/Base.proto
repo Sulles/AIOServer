@@ -30,13 +30,18 @@ enum ErrorCode {
   SERVICE_ERROR = 12;
   PARSING_ERROR = 13;
   PASSWORD_CHANGE_ERROR = 14;
+  ENCODING_ERROR = 15;
+  DECODING_ERROR = 16;
 }
 
 /*
- * EncryptionType enum definition
+ * CommunicationProtocol enum definition
  */
-enum EncryptionType {
+enum CommunicationProtocol {
   PLAIN_TEXT = 0;
   RSA = 1;
   AES = 2;
+  CHACHA = 3;
+  CAN = 4;
+  MQTT = 5;
 }

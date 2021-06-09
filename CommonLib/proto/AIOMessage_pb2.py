@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10\x41IOMessage.proto\x1a\nBase.proto\"\xcc\x01\n\nAIOMessage\x12(\n\x0f\x65ncryption_type\x18\x01 \x01(\x0e\x32\x0f.EncryptionType\x12\x1c\n\x14\x65ncryption_timestamp\x18\x02 \x01(\x02\x12\x14\n\x0cmessage_name\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\x0c\x12\x1a\n\x12\x65ncrypted_messages\x18\x05 \x03(\x0c\x12\x0c\n\x04tags\x18\x06 \x03(\x0c\x12\x0e\n\x06nonces\x18\x07 \x03(\x0c\x12\x15\n\x05\x65rror\x18\x08 \x01(\x0b\x32\x06.Errorb\x06proto3'
+  serialized_pb=b'\n\x10\x41IOMessage.proto\x1a\nBase.proto\"\xda\x01\n\nAIOMessage\x12\x36\n\x16\x63ommunication_protocol\x18\x01 \x01(\x0e\x32\x16.CommunicationProtocol\x12\x1c\n\x14\x65ncryption_timestamp\x18\x02 \x01(\x02\x12\x14\n\x0cmessage_name\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\x0c\x12\x1a\n\x12\x65ncrypted_messages\x18\x05 \x03(\x0c\x12\x0c\n\x04tags\x18\x06 \x03(\x0c\x12\x0e\n\x06nonces\x18\x07 \x03(\x0c\x12\x15\n\x05\x65rror\x18\x08 \x01(\x0b\x32\x06.Errorb\x06proto3'
   ,
   dependencies=[Base__pb2.DESCRIPTOR,])
 
@@ -36,7 +36,7 @@ _AIOMESSAGE = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='encryption_type', full_name='AIOMessage.encryption_type', index=0,
+      name='communication_protocol', full_name='AIOMessage.communication_protocol', index=0,
       number=1, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -104,10 +104,10 @@ _AIOMESSAGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=33,
-  serialized_end=237,
+  serialized_end=251,
 )
 
-_AIOMESSAGE.fields_by_name['encryption_type'].enum_type = Base__pb2._ENCRYPTIONTYPE
+_AIOMESSAGE.fields_by_name['communication_protocol'].enum_type = Base__pb2._COMMUNICATIONPROTOCOL
 _AIOMESSAGE.fields_by_name['error'].message_type = Base__pb2._ERROR
 DESCRIPTOR.message_types_by_name['AIOMessage'] = _AIOMESSAGE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
